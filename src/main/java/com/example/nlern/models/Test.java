@@ -2,18 +2,29 @@ package com.example.nlern.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "tests")
+public class Test {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
-    private String email;
-    private String role;
+
 
 
    @ManyToOne
-    private Group group;
+    private User author;
+
+    @ManyToOne
+    private Group group;  // good place to use ManyToMany
+
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
 
     public Group getGroup() {
         return group;
@@ -39,19 +50,5 @@ public class User {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 }

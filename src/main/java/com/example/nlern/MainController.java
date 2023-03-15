@@ -1,12 +1,13 @@
 package com.example.nlern;
 
 
-import com.example.nlern.models.User;
-import com.example.nlern.repos.UserRepository;
+import com.example.nlern.models.*;
+import com.example.nlern.repos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -15,6 +16,9 @@ import java.util.List;
 public class MainController {
     @Autowired
     private UserRepository UsRepo;
+    @Autowired
+    private GroupRepository GroupRepo;
+
 
 
     @GetMapping("")
@@ -27,6 +31,7 @@ public class MainController {
 
     @GetMapping("/create_user")
     public String createUserPage(@ModelAttribute("user") User user){
+
         return "create_user";
     }
 
@@ -35,6 +40,9 @@ public class MainController {
     public String createUser(@ModelAttribute("user") User user){
         user.setRole("student");
         UsRepo.save(user);
+
+
+
         return "create_user";
     }
 
