@@ -54,10 +54,31 @@ body {
 
 
 
-<main class="form-signin w-100 m-auto">
-    <div>
-        <h1 class="h3 mb-3 fw-normal">last 5 Users</h1>
+<div class="container-fluid row w-100 m-auto">
 
+
+
+        <div class="col-4">
+            <h1 class="h3 mb-3">Your last 5 tests</h1>
+
+            <table>
+                <tr th:each="test: ${tests}">
+                    <td th:text="${test.id}" />
+                    <td th:text="${test.name}" />
+                    <td th:text="${test.group.id}" />
+                </tr>
+            </table>
+            <a href="/home/create_test">Add one</a>
+
+        </div>
+
+
+
+
+
+
+    <div class="col-4">
+        <h1 class="h3 mb-3 fw-normal">last 5 Users</h1>
 
         <table>
         <tr th:each="user: ${users}">
@@ -69,7 +90,10 @@ body {
 
         <a href="/home/create_user">Add one</a>
     </div>
-</main>
+
+</div>
+
+
 
 
 
