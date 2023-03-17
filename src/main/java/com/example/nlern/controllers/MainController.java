@@ -1,4 +1,4 @@
-package com.example.nlern;
+package com.example.nlern.controllers;
 
 
 import com.example.nlern.models.*;
@@ -19,14 +19,34 @@ public class MainController {
     @Autowired
     private GroupRepository GroupRepo;
 
+    @Autowired
+    private TestRepository TestRepo;
+
 
 
     @GetMapping("")
     public String homePage(Model model){
+        int teacherId = 3; //------------- temp imitation until auth not added
         List<User> users= UsRepo.findTop5ByOrderByIdDesc();
+        List<Test> tests= TestRepo.findTop5ByAuthorIdOrderByIdDesc(teacherId);
+
         model.addAttribute("users", users);
+        model.addAttribute("tests", tests);
+
+
         return "teachers_home";
     }
+
+    @GetMapping("/create_test")
+    public String createTestPage(@ModelAttribute("test") Test test){
+        return "create_test";
+    }
+
+    @GetMapping("/redact_test")
+    public String redactTestPage(@ModelAttribute("test") Test test){
+        return "redact_test";
+    }
+
 
 
     @GetMapping("/create_user")
@@ -49,6 +69,8 @@ public class MainController {
 
 
 }
+
+
 
 /*
     @GetMapping("/home/testing")

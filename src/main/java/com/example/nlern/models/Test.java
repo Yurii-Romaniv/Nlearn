@@ -9,6 +9,7 @@ public class Test {
     private int id;
     private String name;
 
+    short duration;
 
 
    @ManyToOne
@@ -50,5 +51,11 @@ public class Test {
         this.name = name;
     }
 
+    public short getDuration() {
+        return duration;
+    }
 
+    public void setDuration(short duration) {
+        this.duration = duration;
+    }
 }
