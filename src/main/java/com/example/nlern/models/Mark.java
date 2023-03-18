@@ -2,6 +2,8 @@ package com.example.nlern.models;
 
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -21,13 +23,15 @@ public class Mark {
 
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Test test;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     private MarkDetail details;
 
 
