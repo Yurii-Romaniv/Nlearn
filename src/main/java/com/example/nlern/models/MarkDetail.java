@@ -3,6 +3,8 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
+import static com.example.nlern.Constants.NUMBER_OF_QUESTIONS;
+
 @Entity
 @Table(name = "mark details")
 public class MarkDetail {
@@ -12,25 +14,21 @@ public class MarkDetail {
     private int id;
 
 
-
+    @ElementCollection()
+    @Column(length = NUMBER_OF_QUESTIONS)
+    private List<Integer> questionId;
 
     @ElementCollection()
-    @Column(length = 10)
-    private List<Integer> guestionId;
-
-    @ElementCollection()
-    @Column(length = 10)
+    @Column(length = 10 * NUMBER_OF_QUESTIONS)
     private List<Integer> answerId; //-----!!!!!!!!!!!!!!!!!!! need rewrite to work with multiple-choice questions
 
 
-
-
-    public List<Integer> getGuestionId() {
-        return guestionId;
+    public List<Integer> getQuestionId() {
+        return questionId;
     }
 
-    public void setGuestionId(List<Integer> guestionId) {
-        this.guestionId = guestionId;
+    public void setQuestionId(List<Integer> questionId) {
+        this.questionId = questionId;
     }
 
     public List<Integer> getAnswerId() {
@@ -48,7 +46,4 @@ public class MarkDetail {
     public void setId(int id) {
         this.id = id;
     }
-
-
-
 }
