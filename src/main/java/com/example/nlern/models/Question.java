@@ -20,7 +20,7 @@ public class Question {
 
 
     @ElementCollection()
-    @Column(length = 10)
+    @Column(length = 1000)
     private List<String> answerVariants;
 
 
