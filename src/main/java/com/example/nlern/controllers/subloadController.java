@@ -47,6 +47,31 @@ public class SubloadController {
     }
 
 
+    @DeleteMapping("tests/{id}")
+    public ResponseEntity deleteClient(@PathVariable Integer id) {
+
+        /*
+        for (Question q: QuestRepo.findByTestIdOrderById(id)) {
+            // need add if(exist)
+            QuestRepo.deleteById(q.getId());
+            continue;
+        }
+
+         */
+
+        QuestRepo.deleteAllByTestId(id);
+
+
+
+        TestRepo.deleteById(id);
+
+
+
+
+
+        return ResponseEntity.ok().build();
+    }
+
 
     @PostMapping("tests")
     public ResponseEntity createClient( @RequestBody FullTest fullTest) {//throws URISyntaxException {
@@ -107,8 +132,8 @@ public class SubloadController {
 
 
             Question oldQuestion= QuestRepo.findById(q.getId()).get();
-            oldQuestion.setAnswers(q.getAnswers());
             //oldQuestion.setAnswers(q.getAnswers());
+            //oldQuestion.setAnswerVariants(q.getAnswerVariants());
             QuestRepo.save(q);
         }
 

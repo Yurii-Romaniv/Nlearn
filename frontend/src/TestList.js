@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import { Link } from 'react-router-dom';
 
-class FormList extends Component {
+class TestList extends Component {
 
     constructor(props) {
         super(props);
@@ -22,7 +22,7 @@ class FormList extends Component {
 
 
     async remove(id) {
-        await fetch(`http://localhost:8080/subload/t/${id}`, {
+        await fetch(`http://localhost:8080/subload/tests/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -97,4 +97,4 @@ class FormList extends Component {
 
 
 }
-export default FormList;
+export default TestList;

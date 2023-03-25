@@ -1,9 +1,10 @@
+
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import {Button, ButtonGroup, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
 
-class ClientEdit extends Component {
+class TestEdit extends Component {
     maxId=1;
 
     handleChange(event) {
@@ -16,20 +17,37 @@ class ClientEdit extends Component {
         console.log(value);
         console.log(target.name);
 
-        if(name.includes(';') ){
+        if(name.includes(';') ) {
+            const indexes =name.split(";");
 
-             const indexes =name.split(";");
+            if (indexes[1]) {
+                if (target.type == "checkbox") {
+                    //((item.questions[indexes[0]]).answers)[indexes[1]] = (!target.checked);
+                    let q =item.questions.find(q => q.id == indexes[0]);
+                    if(!target.checked){
+                        (q.answers) = (q.answers).filter(item => item !== +indexes[1] );
+                        console.log("delated",q.answers)
+                    }else {
+                        if(!q.answers.includes(+indexes[1])){
+                            (q.answers).push(+indexes[1]);
+                            console.log("added",q.answers)
+                        }
 
-             if(indexes[1]) {
-                 //console.log(  ((item.questions[indexes[0]]).answerVariants)[indexes[1]] );
-                 ((item.questions[indexes[0]]).answerVariants)[indexes[1]] = value;
-             }else{
-                 (item.questions[indexes[0]]).question = value;
-             }
+                    }
+                    console.log("--",q.answers)
+
+                } else {
+                    //console.log(  ((item.questions[indexes[0]]).answerVariants)[indexes[1]] );
+                    ((item.questions[indexes[0]]).answerVariants)[indexes[1]] = value;
+                }
+            } else {
+                (item.questions[indexes[0]]).question = value;
+            }
         }else{
 
             item.test[name] = value;
         }
+
 
 
 
@@ -42,8 +60,8 @@ class ClientEdit extends Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-         var {item} = this.state;
-         item.added= Array.from(item.added);
+        var {item} = this.state;
+        item.added= Array.from(item.added);
         item.deleted= Array.from(item.deleted);
         await fetch('http://localhost:8080/subload/tests' + (item.test.id ? '/' + item.test.id : ''), {
             method: (item.test.id) ? 'PUT' : 'POST',
@@ -58,11 +76,11 @@ class ClientEdit extends Component {
 
 
     async remove(index, sIndex) {
-            //let updatedForms = [...this.state.item].filter(i => i.id !== id);
-            //this.setState({forms: updatedForms});
-            let item = {...this.state.item};
-            (item.questions[index]).answerVariants=  ((item.questions[index]).answerVariants).filter(i => i !== (item.questions[index]).answerVariants[sIndex]);
-            this.setState({item});
+        //let updatedForms = [...this.state.item].filter(i => i.id !== id);
+        //this.setState({forms: updatedForms});
+        let item = {...this.state.item};
+        (item.questions[index]).answerVariants=  ((item.questions[index]).answerVariants).filter(i => i !== (item.questions[index]).answerVariants[sIndex]);
+        this.setState({item});
     }
 
 
@@ -87,6 +105,26 @@ class ClientEdit extends Component {
         //console.log(que.id);
         this.setState({item});
     }
+
+
+
+
+
+
+    isChecked(id, sIndex){
+        let item = {...this.state.item};//
+        if((item.questions.find(q => q.id == id)).answers.includes(sIndex)){
+            return true;
+            //return true;
+            //item.questions[index].answers[sIndex]=0;//item.questions[index].answers= item.questions[index].answers.filter(i => i !== sIndex);
+        }
+        return false;
+
+    }
+
+
+
+
 
 
     async delQuestion(index) {
@@ -133,9 +171,10 @@ class ClientEdit extends Component {
         },
 
         questions: [{
-            answerVariants:[""]
+            answerVariants:[""],
+            answers:[]
 
-            } ],
+        } ],
 
         added:new Set(),
         deleted:new Set()
@@ -155,7 +194,7 @@ class ClientEdit extends Component {
     render() {
         const {item} = this.state;
         const forms= item.questions;
-        const title = <h2>{item.test.id ? 'Edit Client' : 'Add Client'}</h2>;
+        const title = <h2>{item.test.id ? 'Edit Test' : 'Add Test'}</h2>;
 
 
 
@@ -172,12 +211,14 @@ class ClientEdit extends Component {
                 {form.answerVariants.map((answer, sIndex) => {
                     return <div className="d-flex justify-content-center container my-auto col-11">
 
-                    <Input className="col-9" type="text" name={index+ ";" +sIndex} value={answer|| ''}
+                        <Input className="col-1" type="checkbox" name={form.id+ ";" +sIndex}  checked={this.isChecked(form.id, sIndex)}  value={this.isChecked(form.id, sIndex)} onChange={this.handleChange}/>
+
+                        <Input className="col-9" type="text" name={index+ ";" +sIndex} value={answer|| ''}
                                onChange={this.handleChange}/>
                         <Button className="col-1" size="sm" color="danger" onClick={() => this.remove(index, sIndex)}>Delete</Button>
                     </div>
 
-            })
+                })
                 }
 
                 <Button className="col-1" size="sm"  color="primary" onClick={() => this.add(index)}>add one</Button>
@@ -235,13 +276,7 @@ class ClientEdit extends Component {
 
 }
 //export default withRouter(ClientEdit);
-export default ClientEdit;
+export default TestEdit;
 
-/*
-        <td>
-            <ButtonGroup>
-                <Button size="sm" color="primary" tag={Link} to={"/clients/" + form.id}>Edit</Button>
-                <Button size="sm" color="danger" onClick={() => this.remove(form.id)}>Delete</Button>
-            </ButtonGroup>
-        </td>
-        */
+
+
