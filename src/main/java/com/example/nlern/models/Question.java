@@ -1,5 +1,7 @@
 package com.example.nlern.models;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class Question {
     private List<Integer> answers;
 
     @ManyToOne
+    //@OnDelete(action = OnDeleteAction.CASCADE)  -------- not working
     private Test test;
 
 
