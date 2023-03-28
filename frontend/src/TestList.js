@@ -85,16 +85,5 @@ class TestList extends Component {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 }
 export default TestList;

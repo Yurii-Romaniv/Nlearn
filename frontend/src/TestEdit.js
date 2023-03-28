@@ -1,11 +1,15 @@
 
-import React, { Component } from 'react';
+import React, { Component} from 'react';
+import  { useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import {Button, ButtonGroup, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
 
 class TestEdit extends Component {
+
     maxId=1;
+
+
 
     handleChange(event) {
 
@@ -14,48 +18,63 @@ class TestEdit extends Component {
         const name = target.name;
         let item = {...this.state.item};
 
-        console.log(value);
-        console.log(target.name);
 
         if(name.includes(';') ) {
             const indexes =name.split(";");
 
             if (indexes[1]) {
-                if (target.type == "checkbox") {
-                    //((item.questions[indexes[0]]).answers)[indexes[1]] = (!target.checked);
+                if (target.type === "checkbox") {
                     let q =item.questions.find(q => q.id == indexes[0]);
                     if(!target.checked){
                         (q.answers) = (q.answers).filter(item => item !== +indexes[1] );
-                        console.log("delated",q.answers)
                     }else {
                         if(!q.answers.includes(+indexes[1])){
                             (q.answers).push(+indexes[1]);
-                            console.log("added",q.answers)
                         }
 
                     }
-                    console.log("--",q.answers)
 
                 } else {
-                    //console.log(  ((item.questions[indexes[0]]).answerVariants)[indexes[1]] );
                     ((item.questions[indexes[0]]).answerVariants)[indexes[1]] = value;
                 }
             } else {
                 (item.questions[indexes[0]]).question = value;
             }
         }else{
-
             item.test[name] = value;
+
+            if(name=="group"){
+                if(/(([a-z]{1,})|([A-Z]{1,}))-[1-9]{2}/.test(value)) {
+                    fetch('http://localhost:8080/subload/check_group/'+value)
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                throw new Error('Failed to fetch boolean value');
+                            }
+                        })
+                        .then(data => {
+                            if (data) {
+                                target.style.backgroundColor = "green";
+                            } else {
+                                target.style.backgroundColor = "red";}
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+
+
+                    }
+                }else{
+                    target.style.backgroundColor = "red";
+            }
+
         }
-
-
-
-
-
 
 
         this.setState({item});
     }
+
 
 
     async handleSubmit(event) {
@@ -71,22 +90,35 @@ class TestEdit extends Component {
             },
             body: JSON.stringify(item),
         });
-        //this.props.history.push('/teachersHome');
     }
 
 
-    async remove(index, sIndex) {
-        //let updatedForms = [...this.state.item].filter(i => i.id !== id);
-        //this.setState({forms: updatedForms});
+
+
+
+
+
+
+
+
+    async delAnswer(index, sIndex) {
         let item = {...this.state.item};
-        (item.questions[index]).answerVariants=  ((item.questions[index]).answerVariants).filter(i => i !== (item.questions[index]).answerVariants[sIndex]);
+        let q =item.questions[index]
+        q.answerVariants=  (q.answerVariants).filter(i => i !== q.answerVariants[sIndex]);
         this.setState({item});
+
+        q.answers = (q.answers).filter(item => item !== +sIndex);
+
+        q.answers.forEach(function(a,index, thisArr) {
+            if(a > +sIndex){
+                thisArr[index]-=1;
+            }
+        });
+
     }
 
 
-    async add(index) {
-        //let updatedForms = [...this.state.item].filter(i => i.id !== id);
-        //this.setState({forms: updatedForms});
+    async addAnswer(index) {
         let item = {...this.state.item};
         (item.questions[index]).answerVariants.push([]);
         this.setState({item});
@@ -95,14 +127,11 @@ class TestEdit extends Component {
 
 
     async addQuestion() {
-        //let updatedForms = [...this.state.item].filter(i => i.id !== id);
-        //this.setState({forms: updatedForms});
         let item = {...this.state.item};
 
-        const que= {name:"", id:++(this.maxId), answerVariants:[""]};
+        const que= {name:"", id:++(this.maxId), answerVariants:[""],answers:[]};
         item.questions.push(que);
         item.added.add(que.id)
-        //console.log(que.id);
         this.setState({item});
     }
 
@@ -115,8 +144,6 @@ class TestEdit extends Component {
         let item = {...this.state.item};//
         if((item.questions.find(q => q.id == id)).answers.includes(sIndex)){
             return true;
-            //return true;
-            //item.questions[index].answers[sIndex]=0;//item.questions[index].answers= item.questions[index].answers.filter(i => i !== sIndex);
         }
         return false;
 
@@ -137,8 +164,6 @@ class TestEdit extends Component {
             item.deleted.add(questionId);
         }
 
-        //console.log(item.deleted);
-        //console.log(item.added);
 
         item.questions=  item.questions.filter(i => i !== item.questions[index]);
         this.setState({item});
@@ -159,7 +184,7 @@ class TestEdit extends Component {
 
             newItem.added=new Set();
             newItem.deleted=new Set();
-
+            newItem.test.group= newItem.test.group.name;
             this.setState({item: newItem});
         }
     }
@@ -167,6 +192,8 @@ class TestEdit extends Component {
     emptyItem = {
         test:{
             name: '',
+            group: '',
+            duration: '',
             id: ''
         },
 
@@ -197,10 +224,6 @@ class TestEdit extends Component {
         const title = <h2>{item.test.id ? 'Edit Test' : 'Add Test'}</h2>;
 
 
-
-
-        //console.log((forms[0]).answerVariants[0])
-
         const formList = forms.map((form, index) => {
             return <FormGroup key={form.id} className="my-4" style={{backgroundColor:"lightblue"}}>
 
@@ -215,13 +238,13 @@ class TestEdit extends Component {
 
                         <Input className="col-9" type="text" name={index+ ";" +sIndex} value={answer|| ''}
                                onChange={this.handleChange}/>
-                        <Button className="col-1" size="sm" color="danger" onClick={() => this.remove(index, sIndex)}>Delete</Button>
+                        <Button className="col-1" size="sm" color="danger" onClick={() => this.delAnswer(index, sIndex)}>Delete</Button>
                     </div>
 
                 })
                 }
 
-                <Button className="col-1" size="sm"  color="primary" onClick={() => this.add(index)}>add one</Button>
+                <Button className="col-1" size="sm"  color="primary" onClick={() => this.addAnswer(index)}>add one</Button>
                 <Button className="col-2" size="sm"  color="danger" onClick={() => this.delQuestion(index)}>delete question</Button>
 
                 <hr></hr>
@@ -246,6 +269,13 @@ class TestEdit extends Component {
                         <Input type="text" name="name" id="name" value={item.test.name || ''}
                                onChange={this.handleChange} autoComplete="name"/>
                     </FormGroup>
+
+                    <FormGroup>
+                        <Label for="group">For group</Label>
+                        <Input type="text" name="group" id="group"  value={item.test.group || ''}
+                               onChange={this.handleChange} />
+                    </FormGroup>
+
                     <FormGroup>
                         <Label for="duration">passing time(minutes)</Label>
                         <Input type="number" name="duration" id="duration" value={item.test.duration || ''}
@@ -275,7 +305,6 @@ class TestEdit extends Component {
 
 
 }
-//export default withRouter(ClientEdit);
 export default TestEdit;
 
 
