@@ -41,7 +41,6 @@ class TestEdit extends Component {
                 (item.questions[indexes[0]]).question = value;
             }
         }else{
-            item.test[name] = value;
 
             if(name=="group"){
                 if(/(([a-z]{1,})|([A-Z]{1,}))-[1-9]{2}/.test(value)) {
@@ -64,9 +63,14 @@ class TestEdit extends Component {
                         });
 
 
-                    }
-                }else{
+                    }else{
                     target.style.backgroundColor = "red";
+                }
+
+                item.groupName = value;
+
+            }else{
+                item.test[name] = value;
             }
 
         }
@@ -184,7 +188,7 @@ class TestEdit extends Component {
 
             newItem.added=new Set();
             newItem.deleted=new Set();
-            newItem.test.group= newItem.test.group.name;
+            newItem.groupName= newItem.test.group.name;
             this.setState({item: newItem});
         }
     }
@@ -192,19 +196,22 @@ class TestEdit extends Component {
     emptyItem = {
         test:{
             name: '',
-            group: '',
+            group:null,
+            author:null,
             duration: '',
-            id: ''
+            id: null
         },
 
         questions: [{
+            id:1,
             answerVariants:[""],
             answers:[]
 
         } ],
 
         added:new Set(),
-        deleted:new Set()
+        deleted:new Set(),
+        groupName:''
 
     };
 
@@ -272,7 +279,7 @@ class TestEdit extends Component {
 
                     <FormGroup>
                         <Label for="group">For group</Label>
-                        <Input type="text" name="group" id="group"  value={item.test.group || ''}
+                        <Input type="text" name="group" id="group"  value={item.groupName || ''}
                                onChange={this.handleChange} />
                     </FormGroup>
 
