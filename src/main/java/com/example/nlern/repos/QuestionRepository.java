@@ -13,4 +13,6 @@ public interface QuestionRepository extends CrudRepository<Question, Integer> {
 
     @Transactional
     void deleteAllByTestId(int Test);
+
+    Question getById(int id);
 }

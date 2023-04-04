@@ -1,5 +1,5 @@
 package com.example.nlern.controllers;
-
+/*
 
 import com.example.nlern.models.*;
 import com.example.nlern.repos.*;
@@ -69,7 +69,7 @@ public class MainController {
 
 
 }
-
+*/
 
 
 /*

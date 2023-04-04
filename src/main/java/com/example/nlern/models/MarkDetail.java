@@ -1,49 +1,32 @@
 package com.example.nlern.models;
+
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-import static com.example.nlern.Constants.NUMBER_OF_QUESTIONS;
+import com.example.nlern.Constants;
 
 @Entity
-@Table(name = "mark details")
+@Table(name = "mark_details")
 public class MarkDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter @Setter
     private int id;
 
 
     @ElementCollection()
-    @Column(length = NUMBER_OF_QUESTIONS)
+    @Column(length = Constants.NUMBER_OF_QUESTIONS)
+    @Getter @Setter
     private List<Integer> questionId;
 
     @ElementCollection()
-    @Column(length = 10 * NUMBER_OF_QUESTIONS)
-    private List<Integer> answerId; //-----!!!!!!!!!!!!!!!!!!! need rewrite to work with multiple-choice questions
+    @Column(length = 10 * Constants.NUMBER_OF_QUESTIONS)
+    @Getter @Setter
+    private List<Integer> answerId; //TODO work with multiple-choice questions
 
 
-    public List<Integer> getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(List<Integer> questionId) {
-        this.questionId = questionId;
-    }
-
-    public List<Integer> getAnswerId() {
-        return answerId;
-    }
-
-    public void setAnswerId(List<Integer> answerId) {
-        this.answerId = answerId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 }

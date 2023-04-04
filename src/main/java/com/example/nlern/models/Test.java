@@ -1,61 +1,30 @@
 package com.example.nlern.models;
+
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tests")
 public class Test {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter @Setter
     private int id;
+    @Getter @Setter
     private String name;
 
+    @Getter @Setter
     short duration;
 
 
    @ManyToOne
+   @Getter @Setter
     private User author;
 
     @ManyToOne
+    @Getter @Setter
     private Group group;  // good place to use ManyToMany
 
 
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public short getDuration() {
-        return duration;
-    }
-
-    public void setDuration(short duration) {
-        this.duration = duration;
-    }
 }

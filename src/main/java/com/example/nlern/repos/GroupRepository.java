@@ -6,4 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface GroupRepository extends CrudRepository<Group, Integer> {
     boolean existsByName(String name);
 
+    Group getByName(String name);
+
 }

@@ -1,46 +1,24 @@
 package com.example.nlern.models;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class FullTest {
-    Optional<Test>  test;
+    @Getter @Setter
+    Test  test;
+    @Getter @Setter
     List<Question> questions;
 
+    @Getter @Setter
     List<Integer> deleted;
+    @Getter @Setter
     List<Integer> added ;
-
-    public Optional<Test>  getTest() {
-        return test;
-    }
-
-    public void setTest(Optional<Test> test) {
-        this.test = test;
-    }
-
-    public List<Question> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
-    }
+    @Getter @Setter
+    String groupName;
 
 
-    public List<Integer> getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(ArrayList<Integer> deleted) {
-        this.deleted = deleted;
-    }
-
-    public List<Integer> getAdded() {
-        return added;
-    }
-
-    public void setAdded(ArrayList<Integer> added) {
-        this.added = added;
-    }
 }

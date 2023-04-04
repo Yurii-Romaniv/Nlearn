@@ -1,5 +1,4 @@
 import './App.css';
-import {Component} from "react";
 import Home from './Home';
 import { BrowserRouter , Route, Switch } from 'react-router-dom';
 import TestEdit from "./TestEdit";
@@ -7,8 +6,8 @@ import TestList from "./TestList";
 import 'bootstrap/dist/css/bootstrap.css';
 
 
-class App extends Component {
-    render() {
+function App() {
+
         return (
             <BrowserRouter>
                 <Switch>
@@ -18,7 +17,7 @@ class App extends Component {
                 </Switch>
             </BrowserRouter>
         )
-    }
+
 }
 
 export default App;

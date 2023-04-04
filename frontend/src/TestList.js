@@ -1,27 +1,37 @@
-import React, { Component } from 'react';
+import React, {  useState ,useEffect} from 'react';
 import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import { Link } from 'react-router-dom';
 
-class TestList extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {tests: []};
-        this.remove = this.remove.bind(this);
-    }
+const EmptyTest = [{
+    name: '',
+    group: null,
+    author: null,
+    duration: '',
+    id: null
+}];
 
-    componentDidMount() {
-        fetch('http://localhost:8080/subload/teachersHome')
-            .then(response => response.json())
-            .then(data => this.setState({tests: data}));
-    }
+export default function TestList()  {
 
+    const [tests, setTests] = useState(EmptyTest);
 
 
 
+    useEffect(() => {
+        // fetch data
+        const dataFetch = async () => {
+            const data = await (
+                await fetch("http://localhost:8080/subload/teachersHome")
+            ).json();
+            setTests(data);
+        };
 
-    async remove(id) {
+        dataFetch();
+    }, []);
+
+
+    async function remove(id) {
         await fetch(`http://localhost:8080/subload/tests/${id}`, {
             method: 'DELETE',
             headers: {
@@ -29,17 +39,10 @@ class TestList extends Component {
                 'Content-Type': 'application/json'
             }
         }).then(() => {
-            let updatedTests = [...this.state.tests].filter(i => i.id !== id);
-            this.setState({tests: updatedTests});
+            let updatedTests = tests.filter(i => i.id !== id);
+            setTests(updatedTests);
         });
     }
-
-    render() {
-        const {tests, isLoading} = this.state;
-
-        if (isLoading) {
-            return <p>Loading...</p>;
-        }
 
         const testList = tests.map(test => {
             return <tr key={test.id}>
@@ -47,11 +50,14 @@ class TestList extends Component {
                 <td>
                     <ButtonGroup>
                         <Button size="sm" color="primary" tag={Link} to={"/tests/" + test.id}>Edit</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(test.id)}>Delete</Button>
+                        <Button size="sm" color="danger" onClick={() => remove(test.id)}>Delete</Button>
                     </ButtonGroup>
                 </td>
             </tr>
         });
+
+
+
 
         return (
             <div>
@@ -77,13 +83,7 @@ class TestList extends Component {
                 </Container>
             </div>
         );
-    }
-
-
-
-
-
 
 
 }
-export default TestList;
+

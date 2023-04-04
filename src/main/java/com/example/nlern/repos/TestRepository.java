@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface TestRepository extends CrudRepository<Test, Integer> {
     List<Test> findTop5ByAuthorIdOrderByIdDesc(int Author);//findTop5ByOrderByIdDesc();
+    Test getById(int id);
 
 }
