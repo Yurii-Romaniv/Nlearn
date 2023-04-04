@@ -1,57 +1,27 @@
 package com.example.nlern.models;
+
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter @Setter
     private int id;
+    @Getter @Setter
     private String name;
+    @Getter @Setter
     private String email;
+    @Getter @Setter
     private String role;
 
 
    @ManyToOne
+   @Getter @Setter
     private Group group;
 
-    public Group getGroup() {
-        return group;
-    }
 
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 }

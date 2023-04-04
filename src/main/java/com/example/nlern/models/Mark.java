@@ -2,6 +2,8 @@ package com.example.nlern.models;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -13,73 +15,30 @@ public class Mark {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter @Setter
     private int id;
 
-
+    @Getter @Setter
     private int mark;
-
+    @Getter @Setter
     private int scale;
 
 
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter @Setter
     private User user;
 
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter @Setter
     private Test test;
 
     @OneToOne(cascade = CascadeType.REMOVE)
+    @Getter @Setter
     private MarkDetail details;
 
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getMark() {
-        return mark;
-    }
-
-    public void setMark(int mark) {
-        this.mark = mark;
-    }
-
-    public int getScale() {
-        return scale;
-    }
-
-    public void setScale(int scale) {
-        this.scale = scale;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Test getTest() {
-        return test;
-    }
-
-    public void setTest(Test test) {
-        this.test = test;
-    }
-
-    public MarkDetail getDetails() {
-        return details;
-    }
-
-    public void setDetails(MarkDetail details) {
-        this.details = details;
-    }
 }

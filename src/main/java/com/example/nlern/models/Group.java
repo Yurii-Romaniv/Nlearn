@@ -1,6 +1,8 @@
 package com.example.nlern.models;
-import jakarta.persistence.*;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @Entity
@@ -8,41 +10,10 @@ import jakarta.persistence.*;
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter @Setter
     private int id;
+    @Getter @Setter
     private String name;
-
-/*
-    @OneToMany(mappedBy = "group")
-    private List<User> users;
-
-
-
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
-
-*/
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
 
 }
