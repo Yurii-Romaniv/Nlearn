@@ -1,27 +1,30 @@
 package com.example.nlern.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Getter @Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Getter @Setter
     private int id;
-    @Getter @Setter
+
     private String name;
-    @Getter @Setter
+
     private String email;
-    @Getter @Setter
+
     private String role;
 
-
    @ManyToOne
-   @Getter @Setter
     private Group group;
-
 
 }

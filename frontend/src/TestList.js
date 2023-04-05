@@ -3,7 +3,6 @@ import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import { Link } from 'react-router-dom';
 
-
 const EmptyTest = [{
     name: '',
     group: null,
@@ -13,16 +12,13 @@ const EmptyTest = [{
 }];
 
 export default function TestList()  {
-
     const [tests, setTests] = useState(EmptyTest);
-
-
 
     useEffect(() => {
         // fetch data
         const dataFetch = async () => {
             const data = await (
-                await fetch("http://localhost:8080/subload/teachersHome")
+                await fetch("/subload/teachersHome")
             ).json();
             setTests(data);
         };
@@ -32,7 +28,7 @@ export default function TestList()  {
 
 
     async function remove(id) {
-        await fetch(`http://localhost:8080/subload/tests/${id}`, {
+        await fetch(`/subload/tests/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -44,20 +40,6 @@ export default function TestList()  {
         });
     }
 
-        const testList = tests.map(test => {
-            return <tr key={test.id}>
-                <td style={{whiteSpace: 'nowrap'}}>{test.name}</td>
-                <td>
-                    <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/tests/" + test.id}>Edit</Button>
-                        <Button size="sm" color="danger" onClick={() => remove(test.id)}>Delete</Button>
-                    </ButtonGroup>
-                </td>
-            </tr>
-        });
-
-
-
 
         return (
             <div>
@@ -68,22 +50,30 @@ export default function TestList()  {
                         <thead>
                         <tr>
                             <th width="30%">Name</th>
-                            <th width="30%">Email</th>
                             <th width="40%">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {testList}
+                        {
+                            tests.map(test => {
+                                return <tr key={test.id}>
+                                    <td style={{whiteSpace: 'nowrap'}}>{test.name}</td>
+                                    <td>
+                                        <ButtonGroup>
+                                            <Button size="sm" color="primary" tag={Link} to={"/tests/" + test.id}>Edit</Button>
+                                            <Button size="sm" color="danger" onClick={() => remove(test.id)}>Delete</Button>
+                                        </ButtonGroup>
+                                    </td>
+                                </tr>
+                            })
+                        }
                         </tbody>
                     </Table>
-
                     <div className="float-right">
                         <Button color="success" tag={Link} to="/tests/new">Add test</Button>
                     </div>
                 </Container>
             </div>
         );
-
-
 }
 
