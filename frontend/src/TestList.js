@@ -55,8 +55,8 @@ export default function TestList()  {
                         </thead>
                         <tbody>
                         {
-                            tests.map(test => {
-                                return <tr key={test.id}>
+                            tests.map(test =>
+                                <tr key={test.id}>
                                     <td style={{whiteSpace: 'nowrap'}}>{test.name}</td>
                                     <td>
                                         <ButtonGroup>
@@ -65,7 +65,7 @@ export default function TestList()  {
                                         </ButtonGroup>
                                     </td>
                                 </tr>
-                            })
+                            )
                         }
                         </tbody>
                     </Table>
