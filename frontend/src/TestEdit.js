@@ -176,7 +176,6 @@ function TestEdit(){
         setItem(newItem);
     }
 
-
     useEffect(() => {
         const dataFetch = async () => {
             const data = await (
@@ -200,8 +199,7 @@ function TestEdit(){
         }
     }, []);
 
-
-        return <div>
+    return <div>
             <AppNavbar/>
             <Container>
                 {<h2>{item.test.id ? 'Edit Test' : 'Add Test'}</h2>}
@@ -226,28 +224,28 @@ function TestEdit(){
 
                     <hr></hr>
                     {
-                        item.questions.map((form, index) => {
-                            return <FormGroup key={form.id} className="my-4" style={{backgroundColor:"lightblue"}}>
+                        item.questions.map((form, index) =>
+                            <FormGroup key={form.id} className="my-4" style={{backgroundColor:"lightblue"}}>
 
                             <Input className="col-9 bold" placeholder="name of question" type="text" name={index + ";"} value={form.question|| ''}  onChange={(e)=>handleQuestionsChange(index,null ,e)} style={{fontWeight:"bold"} }/>
 
                             {
-                                form.answerVariants.map((answer, sIndex) => {
-                                    return <div className="d-flex justify-content-center container my-auto col-11">
+                                form.answerVariants.map((answer, sIndex) =>
+                                    <div className="d-flex justify-content-center container my-auto col-11">
                                     <Input className="col-1" type="checkbox" name={form.id+ ";" +sIndex}  checked={isChecked(form.id, sIndex)}  value={isChecked(form.id, sIndex)}
                                     onChange={(e)=>handleCheckboxChange(form.id,sIndex,e)}/>
                                     <Input className="col-9" type="text" name={index+ ";" +sIndex} value={answer|| ''}
                                     onChange={(e)=>handleQuestionsChange(index,sIndex,e)}/>
                                     <Button className="col-1" size="sm" color="danger" onClick={() => delAnswer(index, sIndex)}>Delete</Button>
                                     </div>
-                                    })
+                                    )
                             }
 
                             <Button className="col-1" size="sm"  color="primary" onClick={() => addAnswer(index)}>add one</Button>
                             <Button className="col-2" size="sm"  color="danger" onClick={() => delQuestion(index)}>delete question</Button>
                             <hr></hr>
                             </FormGroup>
-                        })
+                        )
                     }
 
                     <Button className="my-4" color="warning" onClick={() => addQuestion()} >one more question</Button>
