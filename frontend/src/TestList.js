@@ -2,6 +2,7 @@ import React, {  useState ,useEffect} from 'react';
 import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import { Link } from 'react-router-dom';
+import {useQuery} from "react-query";
 
 const EmptyTest = [{
     name: '',
@@ -12,19 +13,17 @@ const EmptyTest = [{
 }];
 
 export default function TestList()  {
+
     const [tests, setTests] = useState(EmptyTest);
 
-    useEffect(() => {
-        // fetch data
-        const dataFetch = async () => {
-            const data = await (
-                await fetch("/subload/teachersHome")
-            ).json();
-            setTests(data);
-        };
+    const { error, isLoading} = useQuery('tests', () =>
+        fetch('/subload/teachersHome').then(res =>
+            res.json()),
+            {onSuccess:setTests}
+        );
 
-        dataFetch();
-    }, []);
+    if (error) return <div>Request Failed</div>;
+    if (isLoading) return <div>Loading...</div>;
 
 
     async function remove(id) {
