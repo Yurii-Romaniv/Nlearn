@@ -3,6 +3,7 @@ import  { useState } from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {Button,  Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
+import {useQuery} from "react-query";
 
 
 
@@ -30,9 +31,36 @@ const emptyItem = {
 };
 
 function TestEdit(){
+
+    function correctItem(data){
+        data.questions.forEach(function (q) {
+            if (q.id > maxId) {
+                maxId = q.id;
+            }
+        });
+
+        data.added = new Set();
+        data.deleted = new Set();
+        data.groupName = data.test.group.name;
+        setItem(data);
+
+    }
+
+
     const [item, setItem] = useState(emptyItem);
     var maxId=1;
     const { id } = useParams();
+
+    const { error, isLoading} = useQuery('fullTests', () =>
+            fetch(`/subload/tests/${id}`).then(res => res.json()),
+        {
+            onSuccess: (data)=> correctItem(data),
+            enabled: id !== 'new'
+        }
+    );
+
+    if (error) return <div>Request Failed</div>;
+    if (isLoading) return <div>Loading...</div>;
 
 
     function handleGroupChange(event) {
@@ -176,28 +204,6 @@ function TestEdit(){
         setItem(newItem);
     }
 
-    useEffect(() => {
-        const dataFetch = async () => {
-            const data = await (
-                await fetch(`/subload/tests/${id}`)
-            ).json();
-
-            data.questions.forEach(function (q) {
-                if (q.id > maxId) {
-                    maxId = q.id;
-                }
-            });
-
-            data.added = new Set();
-            data.deleted = new Set();
-            data.groupName = data.test.group.name;
-            setItem(data);
-        };
-
-        if (id !== 'new') {
-            dataFetch();
-        }
-    }, []);
 
     return <div>
             <AppNavbar/>
