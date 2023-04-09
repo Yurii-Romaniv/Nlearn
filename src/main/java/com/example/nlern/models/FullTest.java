@@ -6,16 +6,9 @@ import java.util.List;
 
 @Getter @Setter
 public class FullTest {
-
-    Test  test;
-
+    Test test;
     List<Question> questions;
-
     List<Integer> deleted;
-
     List<Integer> added ;
-
     String groupName;
-
-
 }

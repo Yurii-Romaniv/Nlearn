@@ -19,19 +19,16 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "marks")
 @Getter @Setter
 public class Mark {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     private int mark;
-
     private int scale;
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -39,5 +36,4 @@ public class Mark {
 
     @OneToOne(cascade = CascadeType.REMOVE)
     private MarkDetail details;
-
 }

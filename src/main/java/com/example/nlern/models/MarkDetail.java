@@ -19,7 +19,6 @@ import com.example.nlern.Constants;
 @Table(name = "mark_details")
 @Getter @Setter
 public class MarkDetail {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;

@@ -20,13 +20,11 @@ import java.util.List;
 @Table(name = "questions")
 @Getter @Setter
 public class Question {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     private String question;
-
     private boolean isFlags;
 
     @ElementCollection()
@@ -40,5 +38,4 @@ public class Question {
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Test test;
-
 }
