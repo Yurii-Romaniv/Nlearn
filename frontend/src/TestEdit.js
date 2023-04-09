@@ -1,9 +1,10 @@
-import React, { useEffect} from 'react';
+import React from 'react';
 import  { useState } from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {Button,  Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import {useQuery} from "react-query";
+import {REGEX_FOR_GROUP} from "./Constants";
 
 
 
@@ -48,13 +49,13 @@ function TestEdit(){
 
 
     const [item, setItem] = useState(emptyItem);
-    var maxId=1;
+    let maxId = 1;
     const { id } = useParams();
 
     const { error, isLoading} = useQuery('fullTests', () =>
             fetch(`/subload/tests/${id}`).then(res => res.json()),
         {
-            onSuccess: (data)=> correctItem(data),
+            onSuccess: (data) => correctItem(data),
             enabled: id !== 'new'
         }
     );
@@ -69,7 +70,7 @@ function TestEdit(){
         let newItem = {...item};
 
 
-        if(/(([a-z]{1,})|([A-Z]{1,}))-[1-9]{2}/.test(value)) {
+        if(REGEX_FOR_GROUP.test(value)) {
             fetch('/subload/check_group/'+value)
                 .then(response => {
                     if (response.ok) {
@@ -112,7 +113,7 @@ function TestEdit(){
         let newItem = {...item};
         const target = event.target;
 
-        let q =newItem.questions.find(q => q.id === +id);
+        let q = newItem.questions.find(q => q.id === +id);
         if(!target.checked){
             (q.answers) = (q.answers).filter(item => item !== +sId );
         }else {
@@ -123,11 +124,11 @@ function TestEdit(){
             setItem(newItem);
         }
 
-    function handleQuestionsChange( id,  sId =null,event ) {
-        const value =  event.target.value;
+    function handleQuestionsChange( id,  sId = null, event) {
+        const value = event.target.value;
         let newItem = {...item};
 
-        if(sId===null){
+        if(sId === null){
             newItem.questions[id].question = value;
         }else {
             (newItem.questions[id]).answerVariants[sId] = value;
@@ -138,8 +139,8 @@ function TestEdit(){
 
     async function handleSubmit(event) {
         event.preventDefault();
-        item.added= Array.from(item.added);
-        item.deleted= Array.from(item.deleted);
+        item.added = Array.from(item.added);
+        item.deleted = Array.from(item.deleted);
 
         await fetch('/subload/tests' + (item.test.id ? '/' + item.test.id : ''), {
             method: (item.test.id) ? 'PUT' : 'POST',
@@ -154,14 +155,14 @@ function TestEdit(){
 
     async function delAnswer(index, sIndex) {
         let newItem = {...item};
-        let q =newItem.questions[index]
+        let q = newItem.questions[index];
 
-        q.answerVariants=  (q.answerVariants).filter(i => i !== q.answerVariants[sIndex]);
+        q.answerVariants = (q.answerVariants).filter(i => i !== q.answerVariants[sIndex]);
         setItem(newItem);
         q.answers = (q.answers).filter(a => a !== +sIndex);
         q.answers.forEach(function(a,index, thisArr) {
             if(a > +sIndex){
-                thisArr[index]-=1;
+                thisArr[index]--;
             }
         });
 
@@ -178,10 +179,10 @@ function TestEdit(){
 
     async function addQuestion() {
         let newItem = {...item};
-        const que= {name:"", id:+(++(maxId)), answerVariants:[""],answers:[]};
+        const que = {name:"", id:+(++(maxId)), answerVariants:[""],answers:[]};
 
         newItem.questions.push(que);
-        newItem.added.add(que.id)
+        newItem.added.add(que.id);
         setItem(newItem);
     }
 
@@ -193,14 +194,14 @@ function TestEdit(){
 
     async function delQuestion(index) {
         let newItem = {...item};
-        let questionId=newItem.questions[index].id
+        let questionId = newItem.questions[index].id;
 
         if(newItem.added.has(questionId)){
             newItem.added.delete(questionId);
         }else{
             newItem.deleted.add(questionId);
         }
-        newItem.questions=  newItem.questions.filter(i => i !== newItem.questions[index]);
+        newItem.questions = newItem.questions.filter(i => i !== newItem.questions[index]);
         setItem(newItem);
     }
 

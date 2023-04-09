@@ -13,7 +13,6 @@ const EmptyTest = [{
 }];
 
 export default function TestList()  {
-
     const [tests, setTests] = useState(EmptyTest);
 
     const { error, isLoading} = useQuery('tests', () =>
@@ -38,7 +37,6 @@ export default function TestList()  {
             setTests(updatedTests);
         });
     }
-
 
         return (
             <div>

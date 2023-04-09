@@ -5,9 +5,7 @@ import TestEdit from "./TestEdit";
 import TestList from "./TestList";
 import 'bootstrap/dist/css/bootstrap.css';
 
-
 function App() {
-
         return (
             <BrowserRouter>
                 <Switch>
@@ -17,7 +15,5 @@ function App() {
                 </Switch>
             </BrowserRouter>
         )
-
 }
-
 export default App;

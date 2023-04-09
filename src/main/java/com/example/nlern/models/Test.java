@@ -19,7 +19,6 @@ public class Test {
     private int id;
 
     private String name;
-
     short duration;
 
 
@@ -28,6 +27,4 @@ public class Test {
 
     @ManyToOne
     private Group group;  //TODO rewrite in ManyToMany
-
-
 }
