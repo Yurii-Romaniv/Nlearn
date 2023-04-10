@@ -17,7 +17,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "marks")
-@Getter @Setter
+@Getter
+@Setter
 public class Mark {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

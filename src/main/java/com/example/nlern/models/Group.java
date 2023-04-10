@@ -12,7 +12,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "groups")
-@Getter @Setter
+@Getter
+@Setter
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
