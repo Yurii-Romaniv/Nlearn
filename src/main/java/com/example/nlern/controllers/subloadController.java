@@ -27,7 +27,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/subload" )
+@RequestMapping("/subload")
 public class SubloadController {
 
     @Autowired
@@ -43,15 +43,15 @@ public class SubloadController {
     private UserRepository userRepository;
 
 
-    @GetMapping("check_group/{name}" )
-    public boolean checkGroupName(@PathVariable  String name){
+    @GetMapping("check_group/{name}")
+    public boolean checkGroupName(@PathVariable String name) {
         return groupRepository.existsByName(name);
     }
 
     @GetMapping("teachersHome")
-    public List<Test> home(Model model){
+    public List<Test> home(Model model) {
         int teacherId = 3; //TODO get id from auth
-        return  testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId);
+        return testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId);
     }
 
 
@@ -69,19 +69,18 @@ public class SubloadController {
 
         int teacherId = 3; //TODO get id from auth
 
-        Test test = fullTest.getTest();
-        List<Question> questions = fullTest.getQuestions();
+        Test test = fullTest.test();
+        List<Question> questions = fullTest.questions();
 
         test.setAuthor(userRepository.getById(teacherId));
-        test.setGroup(groupRepository.getByName(fullTest.getGroupName()));
+        test.setGroup(groupRepository.getByName(fullTest.groupName()));
         test = testRepository.save(test);
 
         Test finalTest = test;
-        questions.stream()
-                .forEach(q-> {
-                    q.setTest(finalTest);
-                    questionRepository.save(q);
-                });
+        questions.stream().forEach(q -> {
+            q.setTest(finalTest);
+            questionRepository.save(q);
+        });
 
         return ResponseEntity.ok().build();
     }
@@ -90,53 +89,42 @@ public class SubloadController {
     public ResponseEntity updateTest(@PathVariable Integer id, @RequestBody FullTest fullTest) {
         Test finalTest;
         Test test = testRepository.findById(id).orElseThrow(RuntimeException::new);
-        Test receivedTest = fullTest.getTest();
-        List<Question> receivedQuestions = fullTest.getQuestions();
+        Test receivedTest = fullTest.test();
+        List<Question> receivedQuestions = fullTest.questions();
 
-        List<Integer> createdQuestions = fullTest.getAdded();
-        List<Integer> deletedQuestions = fullTest.getDeleted();
+        List<Integer> createdQuestions = fullTest.addedIds();
+        List<Integer> deletedQuestions = fullTest.deletedIds();
 
         test.setName(receivedTest.getName());
         test.setDuration(receivedTest.getDuration());
-        test.setGroup(groupRepository.getByName(fullTest.getGroupName()));
+        test.setGroup(groupRepository.getByName(fullTest.groupName()));
         test = testRepository.save(test);
         finalTest = test;
 
+        deletedQuestions.forEach(i -> questionRepository.deleteById(i));//TODO add if(exist)
 
-        for (int i: deletedQuestions) { //TODO add if(exist)
-            questionRepository.deleteById(i);
-        }
-
-
-        receivedQuestions.stream()
-                .forEach(q-> {
-                    if(createdQuestions.contains(q.getId())){
-                        q.setTest(finalTest);
-                        questionRepository.save(q);
-                    }else{
-                        Question oldQuestion = questionRepository.getById(q.getId());
-                        oldQuestion.setAnswers(q.getAnswers());
-                        oldQuestion.setQuestion(q.getQuestion());
-                        oldQuestion.setAnswerVariants(q.getAnswerVariants());
-                        questionRepository.save(oldQuestion);
-                    }
-                });
-
+        receivedQuestions.stream().forEach(q -> {
+            if (createdQuestions.contains(q.getId())) {
+                q.setTest(finalTest);
+                questionRepository.save(q);
+            } else {
+                Question oldQuestion = questionRepository.getById(q.getId());
+                oldQuestion.setCorrectIndexes(q.getCorrectIndexes());
+                oldQuestion.setQuestionText(q.getQuestionText());
+                oldQuestion.setAnswerVariants(q.getAnswerVariants());
+                questionRepository.save(oldQuestion);
+            }
+        });
 
         return ResponseEntity.ok(test);
     }
 
 
     @GetMapping("tests/{id}")
-    public FullTest getTest(@PathVariable Integer id){
+    public FullTest getTest(@PathVariable Integer id) {
         List<Question> questions = questionRepository.findByTestIdOrderById(id);
         Test test = testRepository.getById(id);
-
-        FullTest fullTest = new FullTest();
-        fullTest.setTest(test);
-        fullTest.setQuestions(questions);
-
-        return  fullTest;
+        return new FullTest(test, questions, null, null, null);
     }
 
 

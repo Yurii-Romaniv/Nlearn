@@ -12,7 +12,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
+@Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,6 +23,6 @@ public class User {
     private String email;
     private String role;
 
-   @ManyToOne
+    @ManyToOne
     private Group group;
 }

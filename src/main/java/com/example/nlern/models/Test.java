@@ -12,17 +12,17 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "tests")
-@Getter @Setter
+@Getter
+@Setter
 public class Test {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     private String name;
-    short duration;
+    private short duration;
 
-
-   @ManyToOne
+    @ManyToOne
     private User author;
 
     @ManyToOne

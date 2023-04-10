@@ -17,7 +17,8 @@ import com.example.nlern.Constants;
 
 @Entity
 @Table(name = "mark_details")
-@Getter @Setter
+@Getter
+@Setter
 public class MarkDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,10 +26,10 @@ public class MarkDetail {
 
     @ElementCollection()
     @Column(length = Constants.NUMBER_OF_QUESTIONS)
-    private List<Integer> questionId;
+    private List<Integer> questionIds;
 
     @ElementCollection()
     @Column(length = 10 * Constants.NUMBER_OF_QUESTIONS)
-    private List<Integer> answerId; //TODO work with multiple-choice questions
+    private List<Integer> answerIds; //TODO work with multiple-choice questions
 
 }

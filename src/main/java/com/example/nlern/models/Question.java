@@ -18,13 +18,14 @@ import java.util.List;
 
 @Entity
 @Table(name = "questions")
-@Getter @Setter
+@Getter
+@Setter
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    private String question;
+    private String questionText;
     private boolean isFlags;
 
     @ElementCollection()
@@ -33,7 +34,7 @@ public class Question {
 
     @ElementCollection()
     @Column(length = 10)
-    private List<Integer> answers;
+    private List<Integer> correctIndexes;
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
