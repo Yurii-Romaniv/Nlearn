@@ -38,12 +38,7 @@ function TestEdit() {
             fetch(`/subload/tests/${id}`).then(res => res.json()),
         {
             onSuccess: (data) => {
-                data.questions.forEach(function (q) {
-                    if (q.id > maxId) {
-                        maxId = q.id;
-                    }
-                });
-
+                maxId = Math.max(...data.questions.map(q => q.id));
                 data.addedIds = new Set();
                 data.deletedIds = new Set();
                 data.groupName = data.test.group.name;

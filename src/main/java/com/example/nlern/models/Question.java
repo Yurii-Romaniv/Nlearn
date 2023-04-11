@@ -26,7 +26,7 @@ public class Question {
     private int id;
 
     private String questionText;
-    private boolean isFlags;
+    private boolean hasMultipleAnswers;
 
     @ElementCollection()
     @Column(length = 1000)
