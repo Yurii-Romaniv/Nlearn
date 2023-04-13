@@ -43,19 +43,19 @@ public class SubloadController {
     private UserRepository userRepository;
 
 
-    @GetMapping("check_group/{name}")
+    @GetMapping("/check_group/{name}")
     public boolean checkGroupName(@PathVariable String name) {
         return groupRepository.existsByName(name);
     }
 
-    @GetMapping("teachersHome")
+    @GetMapping("/teachersHome")
     public List<Test> home(Model model) {
         int teacherId = 3; //TODO get id from auth
         return testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId);
     }
 
 
-    @DeleteMapping("tests/{id}")
+    @DeleteMapping("/tests/{id}")
     public ResponseEntity deleteClient(@PathVariable Integer id) {
         questionRepository.deleteAllByTestId(id);
         testRepository.deleteById(id);
@@ -64,7 +64,7 @@ public class SubloadController {
     }
 
 
-    @PostMapping("tests")
+    @PostMapping("/tests")
     public ResponseEntity createTest(@RequestBody FullTest fullTest) {
 
         int teacherId = 3; //TODO get id from auth
@@ -85,7 +85,7 @@ public class SubloadController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("tests/{id}")
+    @PutMapping("/tests/{id}")
     public ResponseEntity updateTest(@PathVariable Integer id, @RequestBody FullTest fullTest) {
         Test finalTest;
         Test test = testRepository.findById(id).orElseThrow(RuntimeException::new);
@@ -120,7 +120,7 @@ public class SubloadController {
     }
 
 
-    @GetMapping("tests/{id}")
+    @GetMapping("/tests/{id}")
     public FullTest getTest(@PathVariable Integer id) {
         List<Question> questions = questionRepository.findByTestIdOrderById(id);
         Test test = testRepository.getById(id);
