@@ -13,23 +13,23 @@ import lombok.Setter;
 
 import java.util.List;
 
-import com.example.nlern.Constants;
-
 @Entity
 @Table(name = "mark_details")
 @Getter
 @Setter
 public class MarkDetail {
+    private static final int NUMBER_OF_QUESTIONS = 10;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @ElementCollection()
-    @Column(length = Constants.NUMBER_OF_QUESTIONS)
+    @Column(length = NUMBER_OF_QUESTIONS)
     private List<Integer> questionIds;
 
     @ElementCollection()
-    @Column(length = 10 * Constants.NUMBER_OF_QUESTIONS)
+    @Column(length = 10 * NUMBER_OF_QUESTIONS)
     private List<Integer> answerIds; //TODO work with multiple-choice questions
 
 }

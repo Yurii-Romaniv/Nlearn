@@ -16,7 +16,7 @@ export default function TestList() {
     const [tests, setTests] = useState(EmptyTest);
 
     const {error, isLoading} = useQuery('tests', () =>
-            fetch('/subload/teachersHome').then(res =>
+            fetch('/teachersHome').then(res =>
                 res.json()),
         {onSuccess: setTests}
     );
@@ -26,7 +26,7 @@ export default function TestList() {
 
 
     async function remove(id) {
-        await fetch(`/subload/tests/${id}`, {
+        await fetch(`/tests/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',

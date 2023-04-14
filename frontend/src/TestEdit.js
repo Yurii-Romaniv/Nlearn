@@ -35,7 +35,7 @@ function TestEdit() {
     const {id} = useParams();
 
     const {error, isLoading} = useQuery('fullTests', () =>
-            fetch(`/subload/tests/${id}`).then(res => res.json()),
+            fetch(`/tests/${id}`).then(res => res.json()),
         {
             onSuccess: (data) => {
                 maxId = Math.max(...data.questions.map(q => q.id));
@@ -59,7 +59,7 @@ function TestEdit() {
 
 
         if (REGEX_FOR_GROUP.test(value)) {
-            fetch('/subload/check_group/' + value)
+            fetch('/groups/check/' + value)
                 .then(response => {
                     if (response.ok) {
                         return response.json();
@@ -126,7 +126,7 @@ function TestEdit() {
         item.addedIds = Array.from(item.addedIds);
         item.deletedIds = Array.from(item.deletedIds);
 
-        await fetch('/subload/tests' + (item.test.id ? '/' + item.test.id : ''), {
+        await fetch('/tests/' + (item.test.id ? item.test.id : 'new'), {
             method: (item.test.id) ? 'PUT' : 'POST',
             headers: {
                 'Accept': 'application/json',
