@@ -20,7 +20,7 @@ public class Test {
     private int id;
 
     private String name;
-    private short duration;
+    private int duration;
 
     @ManyToOne
     private User author;
