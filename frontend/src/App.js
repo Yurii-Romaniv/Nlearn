@@ -10,7 +10,7 @@ function App() {
         <BrowserRouter>
             <Switch>
                 <Route path='/' exact={true} component={Home}/>
-                <Route path='/teachersHome' exact={true} component={TestList}/>
+                <Route path='/home' exact={true} component={TestList}/>
                 <Route path='/tests/:id' component={TestEdit}/>
             </Switch>
         </BrowserRouter>
