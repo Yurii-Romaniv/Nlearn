@@ -10,7 +10,7 @@ function Home() {
         <div>
             <AppNavbar/>
             <Container fluid>
-                <Button color="link"><Link to="/teachersHome">tests</Link></Button>
+                <Button color="link"><Link to="/home">tests</Link></Button>
             </Container>
         </div>
     );

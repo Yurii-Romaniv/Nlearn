@@ -3,13 +3,16 @@ import {Link, useParams} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import {useQuery} from "react-query";
-import {REGEX_FOR_GROUP} from "./Constants";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 
 
 const emptyItem = {
     test: {
         name: '',
-        group: null,
+        group: {
+            name: null
+        },
         author: null,
         duration: '',
         id: null
@@ -25,7 +28,7 @@ const emptyItem = {
 
     addedIds: new Set(),
     deletedIds: new Set(),
-    groupName: ''
+    groups: []
 
 };
 
@@ -34,7 +37,7 @@ function TestEdit() {
     let maxId = 1;
     const {id} = useParams();
 
-    const {error, isLoading} = useQuery('fullTests', () =>
+    let {error, isLoading} = useQuery('fullTests', () =>
             fetch(`/tests/${id}`).then(res => res.json()),
         {
             onSuccess: (data) => {
@@ -48,37 +51,25 @@ function TestEdit() {
         }
     );
 
+    useQuery('groups', () =>
+            fetch('/groups').then(res => res.json()),
+        {
+            onSuccess: (data) => {
+                let newItem = emptyItem;
+                newItem.groups = data;
+                setItem(newItem);
+            },
+            enabled: id === 'new'
+        }
+    );
+
     if (error) return <div>Request Failed</div>;
     if (isLoading) return <div>Loading...</div>;
 
 
     function handleGroupChange(event) {
-        const target = event.target;
-        const value = target.value;
         let newItem = {...item};
-
-
-        if (REGEX_FOR_GROUP.test(value)) {
-            fetch('/groups/check/' + value)
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('Failed to fetch boolean value');
-                    }
-                })
-                .then(data => {
-                    target.style.backgroundColor = data ? "green" : "red";
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-
-        } else {
-            target.style.backgroundColor = "red";
-        }
-
-        newItem.groupName = value;
+        newItem.test.group = event.value;
         setItem(newItem);
     }
 
@@ -188,6 +179,11 @@ function TestEdit() {
         setItem(newItem);
     }
 
+    let options = [];
+    item.groups.forEach(function (g) {
+        options.push({value: g, label: g.name})
+    });
+
 
     return <div>
         <AppNavbar/>
@@ -202,8 +198,9 @@ function TestEdit() {
 
                 <FormGroup>
                     <Label for="group">For group</Label>
-                    <Input type="text" name="group" id="group" value={item.groupName || ''}
-                           onChange={handleGroupChange}/>
+                    <Dropdown name="group" id="group" options={options} onChange={handleGroupChange}
+                              value={item.test.group.name} placeholder="Select group"/>
+
                 </FormGroup>
 
                 <FormGroup>
@@ -251,7 +248,7 @@ function TestEdit() {
 
                 <FormGroup className="my-4">
                     <Button color="primary" type="submit">Save</Button>{' '}
-                    <Button color="secondary" tag={Link} to="/teachersHome">Cancel</Button>
+                    <Button color="secondary" tag={Link} to="/home">Cancel</Button>
                 </FormGroup>
             </Form>
         </Container>

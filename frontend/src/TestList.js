@@ -16,7 +16,7 @@ export default function TestList() {
     const [tests, setTests] = useState(EmptyTest);
 
     const {error, isLoading} = useQuery('tests', () =>
-            fetch('/teachersHome').then(res =>
+            fetch('/home').then(res =>
                 res.json()),
         {onSuccess: setTests}
     );
