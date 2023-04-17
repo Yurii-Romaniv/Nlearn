@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/tests")
 public class TestController {
 
