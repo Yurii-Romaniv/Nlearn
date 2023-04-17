@@ -4,10 +4,7 @@ import com.example.nlearn.models.FullTest;
 import com.example.nlearn.models.Group;
 import com.example.nlearn.models.Question;
 import com.example.nlearn.models.Test;
-import com.example.nlearn.repos.GroupRepository;
-import com.example.nlearn.repos.QuestionRepository;
 import com.example.nlearn.repos.TestRepository;
-import com.example.nlearn.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,20 +17,20 @@ import java.util.List;
 public class TestService {
 
     @Autowired
-    private QuestionRepository questionRepository;
-
-    @Autowired
     private TestRepository testRepository;
 
     @Autowired
-    private GroupRepository groupRepository;
+    private QuestionService questionService;
 
     @Autowired
-    private UserRepository userRepository;
+    private GroupService groupService;
+
+    @Autowired
+    private UserService userService;
 
 
     public ResponseEntity deleteTest(Integer id) {
-        questionRepository.deleteAllByTestId(id);
+        questionService.deleteAllByTestId(id);
         testRepository.deleteById(id);
 
         return ResponseEntity.ok().build();
@@ -47,13 +44,13 @@ public class TestService {
         Test test = fullTest.test();
         List<Question> questions = fullTest.questions();
 
-        test.setAuthor(userRepository.getById(teacherId));
+        test.setAuthor(userService.getById(teacherId));
         test = testRepository.save(test);
 
         Test finalTest = test;
         questions.stream().forEach(q -> {
             q.setTest(finalTest);
-            questionRepository.save(q);
+            questionService.save(q);
         });
 
         return ResponseEntity.ok().build();
@@ -75,18 +72,18 @@ public class TestService {
         test = testRepository.save(test);
         finalTest = test;
 
-        deletedQuestions.forEach(i -> questionRepository.deleteById(i));//TODO add if(exist)
+        deletedQuestions.forEach(i -> questionService.deleteById(i));//TODO add if(exist)
 
         receivedQuestions.stream().forEach(q -> {
             if (createdQuestions.contains(q.getId())) {
                 q.setTest(finalTest);
-                questionRepository.save(q);
+                questionService.save(q);
             } else {
-                Question oldQuestion = questionRepository.getById(q.getId());
+                Question oldQuestion = questionService.getById(q.getId());
                 oldQuestion.setCorrectIndexes(q.getCorrectIndexes());
                 oldQuestion.setQuestionText(q.getQuestionText());
                 oldQuestion.setAnswerVariants(q.getAnswerVariants());
-                questionRepository.save(oldQuestion);
+                questionService.save(oldQuestion);
             }
         });
 
@@ -95,9 +92,9 @@ public class TestService {
 
 
     public FullTest getTest(Integer id) {
-        List<Question> questions = questionRepository.findByTestIdOrderById(id);
+        List<Question> questions = questionService.findByTestId(id);
         Test test = testRepository.getById(id);
-        List<Group>groups= groupRepository.findAll();
+        List<Group> groups = groupService.getGroups();
         return new FullTest(test, questions, groups, null, null);
     }
 
