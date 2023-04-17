@@ -1,6 +1,6 @@
-package com.example.nlern.repos;
+package com.example.nlearn.repos;
 
-import com.example.nlern.models.Test;
+import com.example.nlearn.models.Test;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

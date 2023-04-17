@@ -1,33 +1,21 @@
-package com.example.nlearn.controllers;
+package com.example.nlearn.services;
 
 import com.example.nlearn.models.FullTest;
+import com.example.nlearn.models.Group;
 import com.example.nlearn.models.Question;
 import com.example.nlearn.models.Test;
-
 import com.example.nlearn.repos.GroupRepository;
 import com.example.nlearn.repos.QuestionRepository;
 import com.example.nlearn.repos.TestRepository;
 import com.example.nlearn.repos.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@RestController
-@CrossOrigin
-@RequestMapping("/tests")
-public class TestController {
+@Service
+public class TestService {
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -42,8 +30,7 @@ public class TestController {
     private UserRepository userRepository;
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteClient(@PathVariable Integer id) {
+    public ResponseEntity deleteTest(Integer id) {
         questionRepository.deleteAllByTestId(id);
         testRepository.deleteById(id);
 
@@ -51,8 +38,7 @@ public class TestController {
     }
 
 
-    @PostMapping("/new")
-    public ResponseEntity createTest(@RequestBody FullTest fullTest) {
+    public ResponseEntity createTest(FullTest fullTest) {
 
         int teacherId = 3; //TODO get id from auth
 
@@ -60,7 +46,6 @@ public class TestController {
         List<Question> questions = fullTest.questions();
 
         test.setAuthor(userRepository.getById(teacherId));
-        test.setGroup(groupRepository.getByName(fullTest.groupName()));
         test = testRepository.save(test);
 
         Test finalTest = test;
@@ -72,8 +57,8 @@ public class TestController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity updateTest(@PathVariable Integer id, @RequestBody FullTest fullTest) {
+
+    public ResponseEntity updateTest(Integer id, FullTest fullTest) {
         Test finalTest;
         Test test = testRepository.findById(id).orElseThrow(RuntimeException::new);
         Test receivedTest = fullTest.test();
@@ -84,7 +69,7 @@ public class TestController {
 
         test.setName(receivedTest.getName());
         test.setDuration(receivedTest.getDuration());
-        test.setGroup(groupRepository.getByName(fullTest.groupName()));
+        test.setGroup(receivedTest.getGroup());
         test = testRepository.save(test);
         finalTest = test;
 
@@ -107,13 +92,16 @@ public class TestController {
     }
 
 
-    @GetMapping("/{id}")
-    public FullTest getTest(@PathVariable Integer id) {
+    public FullTest getTest(Integer id) {
         List<Question> questions = questionRepository.findByTestIdOrderById(id);
         Test test = testRepository.getById(id);
-        return new FullTest(test, questions, null, null, null);
+        List<Group>groups= groupRepository.findAll();
+        return new FullTest(test, questions, groups, null, null);
     }
 
+    public List<Test> getTop5Tests(int teacherId) {
+        return testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId);
+    }
 
 }
 

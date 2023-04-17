@@ -1,14 +1,9 @@
-package com.example.nlern.controllers;
+package com.example.nlearn.controllers;
 
-import com.example.nlern.models.FullTest;
-import com.example.nlern.models.Question;
-import com.example.nlern.models.Test;
+import com.example.nlearn.models.FullTest;
 
-import com.example.nlern.repos.GroupRepository;
-import com.example.nlern.repos.QuestionRepository;
-import com.example.nlern.repos.TestRepository;
-import com.example.nlern.repos.UserRepository;
-
+import com.example.nlearn.models.Test;
+import com.example.nlearn.services.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
@@ -30,90 +25,33 @@ import java.util.List;
 public class TestController {
 
     @Autowired
-    private QuestionRepository questionRepository;
+    private TestService testService;
 
-    @Autowired
-    private TestRepository testRepository;
-
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    @GetMapping("/first5")
+    public List<Test> home() {
+        int teacherId = 3; //TODO get id from auth
+        return testService.getTop5Tests(teacherId);
+    }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteClient(@PathVariable Integer id) {
-        questionRepository.deleteAllByTestId(id);
-        testRepository.deleteById(id);
-
-        return ResponseEntity.ok().build();
+        return testService.deleteTest(id);
     }
 
-
-    @PostMapping("/")
+    @PostMapping("/new")
     public ResponseEntity createTest(@RequestBody FullTest fullTest) {
-
-        int teacherId = 3; //TODO get id from auth
-
-        Test test = fullTest.test();
-        List<Question> questions = fullTest.questions();
-
-        test.setAuthor(userRepository.getById(teacherId));
-        test.setGroup(groupRepository.getByName(fullTest.groupName()));
-        test = testRepository.save(test);
-
-        Test finalTest = test;
-        questions.stream().forEach(q -> {
-            q.setTest(finalTest);
-            questionRepository.save(q);
-        });
-
-        return ResponseEntity.ok().build();
+        return testService.createTest(fullTest);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateTest(@PathVariable Integer id, @RequestBody FullTest fullTest) {
-        Test finalTest;
-        Test test = testRepository.findById(id).orElseThrow(RuntimeException::new);
-        Test receivedTest = fullTest.test();
-        List<Question> receivedQuestions = fullTest.questions();
-
-        List<Integer> createdQuestions = fullTest.addedIds();
-        List<Integer> deletedQuestions = fullTest.deletedIds();
-
-        test.setName(receivedTest.getName());
-        test.setDuration(receivedTest.getDuration());
-        test.setGroup(groupRepository.getByName(fullTest.groupName()));
-        test = testRepository.save(test);
-        finalTest = test;
-
-        deletedQuestions.forEach(i -> questionRepository.deleteById(i));//TODO add if(exist)
-
-        receivedQuestions.stream().forEach(q -> {
-            if (createdQuestions.contains(q.getId())) {
-                q.setTest(finalTest);
-                questionRepository.save(q);
-            } else {
-                Question oldQuestion = questionRepository.getById(q.getId());
-                oldQuestion.setCorrectIndexes(q.getCorrectIndexes());
-                oldQuestion.setQuestionText(q.getQuestionText());
-                oldQuestion.setAnswerVariants(q.getAnswerVariants());
-                questionRepository.save(oldQuestion);
-            }
-        });
-
-        return ResponseEntity.ok(test);
+        return testService.updateTest(id, fullTest);
     }
-
 
     @GetMapping("/{id}")
     public FullTest getTest(@PathVariable Integer id) {
-        List<Question> questions = questionRepository.findByTestIdOrderById(id);
-        Test test = testRepository.getById(id);
-        return new FullTest(test, questions, null, null, null);
+        return testService.getTest(id);
     }
-
-
 }
 

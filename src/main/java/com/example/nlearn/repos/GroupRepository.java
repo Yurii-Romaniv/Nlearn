@@ -1,10 +1,13 @@
-package com.example.nlern.repos;
+package com.example.nlearn.repos;
 
-import com.example.nlern.models.Group;
+import com.example.nlearn.models.Group;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 public interface GroupRepository extends CrudRepository<Group, Integer> {
-    boolean existsByName(String name);
+
+    List<Group> findAll();
 
     Group getByName(String name);
 

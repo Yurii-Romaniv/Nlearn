@@ -1,2 +1,5 @@
-package com.example.nlearn.models;public class Role {
+package com.example.nlearn.models;
+
+public enum Role{
+    STUDENT, TEACHER, ADMIN;
 }

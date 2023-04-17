@@ -1,6 +1,6 @@
-package com.example.nlern.models;
+package com.example.nlearn.models;
 
 import java.util.List;
 
-public record FullTest(Test test, List<Question> questions, List<Integer> deletedIds, List<Integer> addedIds, String groupName) {
+public record FullTest(Test test, List<Question> questions, List<Group> groups, List<Integer> deletedIds, List<Integer> addedIds) {
 }

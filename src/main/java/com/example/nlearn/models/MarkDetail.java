@@ -1,4 +1,4 @@
-package com.example.nlern.models;
+package com.example.nlearn.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

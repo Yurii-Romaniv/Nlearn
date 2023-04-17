@@ -1,7 +1,7 @@
-package com.example.nlern.repos;
+package com.example.nlearn.repos;
 
 
-import com.example.nlern.models.MarkDetail;
+import com.example.nlearn.models.MarkDetail;
 import org.springframework.data.repository.CrudRepository;
 
 public interface MarkDetailRepository extends CrudRepository<MarkDetail, Integer> {

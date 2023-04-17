@@ -1,7 +1,7 @@
-package com.example.nlern.repos;
+package com.example.nlearn.repos;
 
 
-import com.example.nlern.models.Question;
+import com.example.nlearn.models.Question;
 import jakarta.transaction.Transactional;
 import org.springframework.data.repository.CrudRepository;
 
