@@ -37,7 +37,7 @@ function TestEdit() {
     let maxId = 1;
     const {id} = useParams();
 
-    let {error, isLoading} = useQuery('fullTests', () =>
+    const {error, isLoading} = useQuery('fullTests', () =>
             fetch(`/tests/${id}`).then(res => res.json()),
         {
             onSuccess: (data) => {

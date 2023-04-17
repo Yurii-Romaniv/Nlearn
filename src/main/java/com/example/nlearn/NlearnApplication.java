@@ -1,4 +1,4 @@
-package com.example.nlern;
+package com.example.nlearn;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

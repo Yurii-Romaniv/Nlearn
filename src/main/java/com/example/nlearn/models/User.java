@@ -1,6 +1,8 @@
-package com.example.nlern.models;
+package com.example.nlearn.models;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +23,9 @@ public class User {
 
     private String name;
     private String email;
-    private String role;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @ManyToOne
     private Group group;
