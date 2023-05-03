@@ -4,11 +4,13 @@ import com.example.nlearn.models.FullTest;
 import com.example.nlearn.models.Group;
 import com.example.nlearn.models.Question;
 import com.example.nlearn.models.Test;
+import com.example.nlearn.models.User;
 import com.example.nlearn.repos.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
 
@@ -29,22 +31,24 @@ public class TestService {
     private UserService userService;
 
 
-    public ResponseEntity deleteTest(Integer id) {
-        questionService.deleteAllByTestId(id);
-        testRepository.deleteById(id);
+    public ResponseEntity deleteTest(Integer testId, Integer userId, Boolean isAdmin) {
+
+        if (!(isAdmin || testRepository.getById(testId).getAuthor().getId() == userId))
+            return ResponseEntity.notFound().build();
+
+        questionService.deleteAllByTestId(testId);
+        testRepository.deleteById(testId);
 
         return ResponseEntity.ok().build();
     }
 
 
-    public ResponseEntity createTest(FullTest fullTest) {
-
-        int teacherId = 3; //TODO get id from auth
+    public ResponseEntity createTest(FullTest fullTest, User creator) {
 
         Test test = fullTest.test();
         List<Question> questions = fullTest.questions();
 
-        test.setAuthor(userService.getById(teacherId));
+        test.setAuthor(userService.getById(creator.getId()));
         test = testRepository.save(test);
 
         Test finalTest = test;
@@ -57,9 +61,13 @@ public class TestService {
     }
 
 
-    public ResponseEntity updateTest(Integer id, FullTest fullTest) {
+    public ResponseEntity updateTest(Integer testId, FullTest fullTest, Integer userId, Boolean isAdmin) {
+
+        if (!(isAdmin || testRepository.getById(testId).getAuthor().getId() == userId))
+            return ResponseEntity.notFound().build();
+
         Test finalTest;
-        Test test = testRepository.findById(id).orElseThrow(RuntimeException::new);
+        Test test = testRepository.findById(testId).orElseThrow(RuntimeException::new);
         Test receivedTest = fullTest.test();
         List<Question> receivedQuestions = fullTest.questions();
 
@@ -91,9 +99,10 @@ public class TestService {
     }
 
 
-    public FullTest getTest(Integer id) {
-        List<Question> questions = questionService.findByTestId(id);
-        Test test = testRepository.getById(id);
+    public FullTest getTest(Integer testId, User author, Boolean isAdmin) {
+        Test test = testRepository.getTestById(testId);
+        if (!(isAdmin || test.getAuthor().getId() == author.getId())) throw new ResourceAccessException("");
+        List<Question> questions = questionService.findByTestId(testId);
         List<Group> groups = groupService.getGroups();
         return new FullTest(test, questions, groups, null, null);
     }
@@ -102,5 +111,8 @@ public class TestService {
         return testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId);
     }
 
-}
 
+    public List<Test> getTop5TestsForStudent(int groupId) {
+        return testRepository.findTop5ByGroupIdOrderByIdDesc(groupId);
+    }
+}
