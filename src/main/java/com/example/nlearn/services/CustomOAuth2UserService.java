@@ -13,7 +13,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Autowired

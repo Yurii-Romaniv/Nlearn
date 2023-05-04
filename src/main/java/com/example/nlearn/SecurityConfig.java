@@ -6,15 +6,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .requestMatchers("/teachersHome/**").hasAnyAuthority("TEACHER", "ADMIN")
-                .requestMatchers("/studentsHome/**").hasAnyAuthority("STUDENT")
+                .requestMatchers("/teachers-home/**").hasAnyAuthority("TEACHER", "ADMIN")
+                .requestMatchers("/students-home/**").hasAnyAuthority("STUDENT")
                 .anyRequest().authenticated()
                 .and()
                 .logout()

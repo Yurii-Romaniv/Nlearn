@@ -17,7 +17,7 @@ export default function TestList() {
     const [tests, setTests] = useState(EmptyTest);
 
     const {error, isLoading} = useQuery('tests', () =>
-            fetch('teachersHome/tests/first5', {mode: "no-cors"}).then(checkAuth),
+            fetch('teachers-home/tests/firstFive', {mode: "no-cors"}).then(checkAuth),
         {onSuccess: setTests}
     );
 
@@ -26,7 +26,7 @@ export default function TestList() {
 
 
     async function remove(id) {
-        await fetch(`/teachersHome/tests/${id}`, {
+        await fetch(`/teachers-home/tests/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -58,7 +58,7 @@ export default function TestList() {
                                 <td>
                                     <ButtonGroup>
                                         <Button size="sm" color="primary" tag={Link}
-                                                to={"/teachersHome/tests/" + test.id}>Edit</Button>
+                                                to={"/teachers-home/tests/" + test.id}>Edit</Button>
                                         <Button size="sm" color="danger" onClick={() => remove(test.id)}>Delete</Button>
                                     </ButtonGroup>
                                 </td>
@@ -68,7 +68,7 @@ export default function TestList() {
                     </tbody>
                 </Table>
                 <div className="float-right">
-                    <Button color="success" tag={Link} to="/teachersHome/tests/new">Add test</Button>
+                    <Button color="success" tag={Link} to="/teachers-home/tests/new">Add test</Button>
                 </div>
             </Container>
         </div>
