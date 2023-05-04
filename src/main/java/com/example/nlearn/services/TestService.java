@@ -33,8 +33,8 @@ public class TestService {
 
     public ResponseEntity deleteTest(Integer testId, Integer userId, Boolean isAdmin) {
 
-        if (!(isAdmin || testRepository.getById(testId).getAuthor().getId() == userId))
-            return ResponseEntity.notFound().build();
+        boolean userIsOwner = testRepository.getById(testId).getAuthor().getId() == userId;
+        if (!(isAdmin || userIsOwner)) return ResponseEntity.notFound().build();
 
         questionService.deleteAllByTestId(testId);
         testRepository.deleteById(testId);
@@ -62,12 +62,11 @@ public class TestService {
 
 
     public ResponseEntity updateTest(Integer testId, FullTest fullTest, Integer userId, Boolean isAdmin) {
-
-        if (!(isAdmin || testRepository.getById(testId).getAuthor().getId() == userId))
-            return ResponseEntity.notFound().build();
+        Test test = testRepository.getTestById(testId);
+        boolean userIsOwner = test.getAuthor().getId() == userId;
+        if (!(isAdmin || userIsOwner)) return ResponseEntity.notFound().build();
 
         Test finalTest;
-        Test test = testRepository.findById(testId).orElseThrow(RuntimeException::new);
         Test receivedTest = fullTest.test();
         List<Question> receivedQuestions = fullTest.questions();
 
@@ -99,9 +98,11 @@ public class TestService {
     }
 
 
-    public FullTest getTest(Integer testId, User author, Boolean isAdmin) {
+    public FullTest getTest(Integer testId, User user, Boolean isAdmin) {
         Test test = testRepository.getTestById(testId);
-        if (!(isAdmin || test.getAuthor().getId() == author.getId())) throw new ResourceAccessException("");
+        boolean userIsOwner = test.getAuthor().getId() == user.getId();
+        if (!(isAdmin || userIsOwner)) throw new ResourceAccessException("");
+
         List<Question> questions = questionService.findByTestId(testId);
         List<Group> groups = groupService.getGroups();
         return new FullTest(test, questions, groups, null, null);

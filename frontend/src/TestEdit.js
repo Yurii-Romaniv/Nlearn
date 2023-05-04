@@ -39,7 +39,7 @@ function TestEdit() {
     const {id} = useParams();
 
     const {error, isLoading} = useQuery('fullTests', () =>
-            fetch(`/teachersHome/tests/${id}`, {mode: "no-cors"}).then(checkAuth),
+            fetch(`/teachers-home/tests/${id}`, {mode: "no-cors"}).then(checkAuth),
         {
             onSuccess: (data) => {
                 maxId = Math.max(...data.questions.map(q => q.id));
@@ -53,7 +53,7 @@ function TestEdit() {
     );
 
     useQuery('groups', () =>
-            fetch('/teachersHome/groups', {mode: "no-cors"}).then(checkAuth),
+            fetch('/teachers-home/groups', {mode: "no-cors"}).then(checkAuth),
         {
             onSuccess: (data) => {
                 let newItem = emptyItem;
@@ -118,7 +118,7 @@ function TestEdit() {
         item.addedIds = Array.from(item.addedIds);
         item.deletedIds = Array.from(item.deletedIds);
 
-        await fetch('/teachersHome/tests/' + (item.test.id ? item.test.id : 'new'), {
+        await fetch('/teachers-home/tests/' + (item.test.id ?? 'new'), {
             method: (item.test.id) ? 'PUT' : 'POST',
             headers: {
                 'Accept': 'application/json',

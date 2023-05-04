@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 @RestController
-@RequestMapping("studentsHome")
+@RequestMapping("students-home")
 public class StudentsHomeController {
 
     @Autowired
     private TestService testService;
 
-    @GetMapping("/first5")
+    @GetMapping("/firstFive")
     public List<Test> home(@AuthenticationPrincipal CustomOAuth2User user) {
         return testService.getTop5TestsForStudent(user.getDbUser().getId());
     }

@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.List;
 
 @RestController
-@RequestMapping("teachersHome/tests")
+@RequestMapping("teachers-home/tests")
 public class TestController {
 
     @Autowired
     private TestService testService;
 
-    @GetMapping("/first5")
+    @GetMapping("/firstFive")
     public List<Test> home(@AuthenticationPrincipal CustomOAuth2User user) {
         return testService.getTop5Tests(user.getDbUser().getId());
     }
