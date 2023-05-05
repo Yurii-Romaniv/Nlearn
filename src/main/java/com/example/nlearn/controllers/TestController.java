@@ -27,7 +27,7 @@ public class TestController {
     @Autowired
     private TestService testService;
 
-    @GetMapping("/firstFive")
+    @GetMapping("/load-tests")
     public List<Test> home(@AuthenticationPrincipal CustomOAuth2User user) {
         return testService.getTop5Tests(user.getDbUser().getId());
     }

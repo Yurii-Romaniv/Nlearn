@@ -17,7 +17,7 @@ export default function TestList() {
     const [tests, setTests] = useState(EmptyTest);
 
     const {error, isLoading} = useQuery('tests', () =>
-            fetch('teachers-home/tests/firstFive', {mode: "no-cors"}).then(checkAuth),
+            fetch('teachers-home/tests/load-tests', {mode: "no-cors"}).then(checkAuth),
         {onSuccess: setTests}
     );
 

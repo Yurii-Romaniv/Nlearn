@@ -18,8 +18,5 @@ public class StudentsHomeController {
     @Autowired
     private TestService testService;
 
-    @GetMapping("/firstFive")
-    public List<Test> home(@AuthenticationPrincipal CustomOAuth2User user) {
-        return testService.getTop5TestsForStudent(user.getDbUser().getId());
-    }
+    //TODO add mappers for students information
 }
