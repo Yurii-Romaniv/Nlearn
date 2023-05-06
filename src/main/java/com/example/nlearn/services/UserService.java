@@ -17,5 +17,25 @@ public class UserService {
     public User getById(Integer id) {
         return userRepository.getById(id);
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public int getIdByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        return user.getId();
+    }
+
+    public int getGroupIdByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        return user.getGroup().getId();
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+
 }
 
