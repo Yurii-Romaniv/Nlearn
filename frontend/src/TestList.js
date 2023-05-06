@@ -3,7 +3,6 @@ import {Button, ButtonGroup, Container, Table} from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import {Link} from 'react-router-dom';
 import {useQuery} from "react-query";
-import {checkAuth} from "./checkAuth"
 
 const EmptyTest = [{
     name: '',
@@ -17,7 +16,8 @@ export default function TestList() {
     const [tests, setTests] = useState(EmptyTest);
 
     const {error, isLoading} = useQuery('tests', () =>
-            fetch('teachers-home/tests/load-tests', {mode: "no-cors"}).then(checkAuth),
+            fetch('/tests/first5').then(res =>
+                res.json()),
         {onSuccess: setTests}
     );
 
@@ -26,7 +26,7 @@ export default function TestList() {
 
 
     async function remove(id) {
-        await fetch(`/teachers-home/tests/${id}`, {
+        await fetch(`/tests/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -58,7 +58,7 @@ export default function TestList() {
                                 <td>
                                     <ButtonGroup>
                                         <Button size="sm" color="primary" tag={Link}
-                                                to={"/teachers-home/tests/" + test.id}>Edit</Button>
+                                                to={"/tests/" + test.id}>Edit</Button>
                                         <Button size="sm" color="danger" onClick={() => remove(test.id)}>Delete</Button>
                                     </ButtonGroup>
                                 </td>
@@ -68,7 +68,7 @@ export default function TestList() {
                     </tbody>
                 </Table>
                 <div className="float-right">
-                    <Button color="success" tag={Link} to="/teachers-home/tests/new">Add test</Button>
+                    <Button color="success" tag={Link} to="/tests/new">Add test</Button>
                 </div>
             </Container>
         </div>

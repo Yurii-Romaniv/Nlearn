@@ -5,7 +5,6 @@ import AppNavbar from './AppNavbar';
 import {useQuery} from "react-query";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import {checkAuth} from "./checkAuth";
 
 
 const emptyItem = {
@@ -39,7 +38,7 @@ function TestEdit() {
     const {id} = useParams();
 
     const {error, isLoading} = useQuery('fullTests', () =>
-            fetch(`/teachers-home/tests/${id}`, {mode: "no-cors"}).then(checkAuth),
+            fetch(`/tests/${id}`).then(res => res.json()),
         {
             onSuccess: (data) => {
                 maxId = Math.max(...data.questions.map(q => q.id));
@@ -53,7 +52,7 @@ function TestEdit() {
     );
 
     useQuery('groups', () =>
-            fetch('/teachers-home/groups', {mode: "no-cors"}).then(checkAuth),
+            fetch('/groups').then(res => res.json()),
         {
             onSuccess: (data) => {
                 let newItem = emptyItem;
@@ -118,7 +117,7 @@ function TestEdit() {
         item.addedIds = Array.from(item.addedIds);
         item.deletedIds = Array.from(item.deletedIds);
 
-        await fetch('/teachers-home/tests/' + (item.test.id ?? 'new'), {
+        await fetch('/tests/' + (item.test.id ? item.test.id : 'new'), {
             method: (item.test.id) ? 'PUT' : 'POST',
             headers: {
                 'Accept': 'application/json',

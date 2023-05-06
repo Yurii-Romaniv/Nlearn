@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/teachers-home/groups")
+@RequestMapping("/groups")
 public class GroupController {
     @Autowired
     private GroupService groupService;

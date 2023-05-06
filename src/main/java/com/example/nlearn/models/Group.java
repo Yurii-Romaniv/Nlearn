@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Entity
 @Table(name = "groups")
 @Getter
