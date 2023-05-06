@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 @RestController
-@RequestMapping("students-home")
+@RequestMapping("/students-home")
 public class StudentsHomeController {
 
     @Autowired
