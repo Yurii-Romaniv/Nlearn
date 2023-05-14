@@ -1,5 +1,6 @@
 package com.example.nlearn.services;
 
+import com.example.nlearn.exception.TestNotAllowedException;
 import com.example.nlearn.models.FullTest;
 import com.example.nlearn.models.Mark;
 import com.example.nlearn.models.Question;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -44,7 +44,7 @@ public class TestPassingService {
         boolean isTestForThisStudent = test.getGroup().getId() == user.getGroup().getId();
         boolean areRetriesOver = markService.countMarksByUserAndTest(user, test) >= test.getNumberOfRetries();
         if ((sessionInfo.isActive() && sessionInfo.getCurrentTestId() != testId) || !isTestForThisStudent || endTime.isBefore(currentTime) || areRetriesOver) {
-            throw new ResourceAccessException("");
+            throw new TestNotAllowedException();
         }
     }
 
@@ -53,7 +53,7 @@ public class TestPassingService {
     public FullTest startTest(Integer testId, User user) {
         Test test = testService.getTestById(testId);
         TestSessionInfo sessionInfo = user.getTestSessionInfo();
-        LocalDateTime currentTime = java.time.LocalDateTime.now();
+        LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime endTime = test.getEndTime();
 
         raiseErrorIfTestingNotAllowed(test, testId, user, sessionInfo, currentTime, endTime);
@@ -72,7 +72,7 @@ public class TestPassingService {
     public ResponseEntity endTest(Integer testId, User user, List<Question> answeredQuestions) {
         Test test = testService.getTestById(testId);
         TestSessionInfo sessionInfo = user.getTestSessionInfo();
-        LocalDateTime currentTime = java.time.LocalDateTime.now();
+        LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime endTime = sessionInfo.getEndTime();
 
         boolean isTestAllowed = test.getGroup().getId() == user.getGroup().getId();
@@ -82,20 +82,16 @@ public class TestPassingService {
 
         List<Question> questions = questionService.findByTestId(testId);
 
-        double testValuation = StreamUtils.zip(answeredQuestions.stream(), questions.stream(), (answered, real) -> {
-            if (answered.getCorrectIndexes().size() > real.getCorrectIndexes().size()) {
-                return 0.0;
-            }
+        double testValuation = StreamUtils.zip(answeredQuestions.stream(), questions.stream(), (answered, real) ->
+                answered.getCorrectIndexes().size() > real.getCorrectIndexes().size()
+                        ? 0.0
+                        : answered.getCorrectIndexes().stream().mapToDouble(integer -> {
+                    if (real.getCorrectIndexes().contains(integer)) {
+                        return 1;
+                    }
+                    return 0;
 
-            return answered.getCorrectIndexes().stream().mapToInt(integer -> {
-                if (real.getCorrectIndexes().contains(integer)) {
-                    return 1;
-                }
-                return 0;
-
-            }).sum() / (double) real.getNumberOfCorrectAnswers();
-
-        }).mapToDouble(Double::doubleValue).sum();
+                }).sum() / real.getNumberOfCorrectAnswers()).mapToDouble(Double::doubleValue).sum();
 
         Mark mark = new Mark();
         mark.setValue((int) (testValuation * SCALE_OF_MARKS / questions.size()));
@@ -111,7 +107,7 @@ public class TestPassingService {
 
     public void checkIfAllTestsClosed(User user) {
         TestSessionInfo sessionInfo = user.getTestSessionInfo();
-        LocalDateTime currentTime = java.time.LocalDateTime.now();
+        LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime endTime = sessionInfo.getEndTime();
 
         if (sessionInfo.isActive() && currentTime.isAfter(endTime)) {

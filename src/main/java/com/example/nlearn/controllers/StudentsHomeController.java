@@ -35,12 +35,12 @@ public class StudentsHomeController {
         return testService.getContentForStudent(user.getDbUser());
     }
 
-    @GetMapping("/start-test/{id}")
+    @GetMapping("/{id}/start")
     public FullTest testing(@PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
         return testPassingService.startTest(id, user.getDbUser());
     }
 
-    @PostMapping("/end-test/{id}")
+    @PostMapping("/{id}/end")
     public ResponseEntity testCheck(@RequestBody List<Question> questions, @PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
         return testPassingService.endTest(id, user.getDbUser(), questions);
     }
