@@ -2,7 +2,9 @@ package com.example.nlearn.services;
 
 import com.example.nlearn.models.FullTest;
 import com.example.nlearn.models.Group;
+import com.example.nlearn.models.Mark;
 import com.example.nlearn.models.Question;
+import com.example.nlearn.models.StudentsContent;
 import com.example.nlearn.models.Test;
 import com.example.nlearn.models.User;
 import com.example.nlearn.repos.TestRepository;
@@ -30,11 +32,13 @@ public class TestService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private MarkService markService;
 
     public ResponseEntity deleteTest(Integer testId, Integer userId, Boolean isAdmin) {
 
         boolean userIsOwner = testRepository.getById(testId).getAuthor().getId() == userId;
-        if (!(isAdmin || userIsOwner)){
+        if (!(isAdmin || userIsOwner)) {
             return ResponseEntity.notFound().build();
         }
 
@@ -66,7 +70,7 @@ public class TestService {
     public ResponseEntity updateTest(Integer testId, FullTest fullTest, Integer userId, Boolean isAdmin) {
         Test test = testRepository.getTestById(testId);
         boolean userIsOwner = test.getAuthor().getId() == userId;
-        if (!(isAdmin || userIsOwner)){
+        if (!(isAdmin || userIsOwner)) {
             return ResponseEntity.notFound().build();
         }
 
@@ -94,6 +98,7 @@ public class TestService {
                 oldQuestion.setCorrectIndexes(q.getCorrectIndexes());
                 oldQuestion.setQuestionText(q.getQuestionText());
                 oldQuestion.setAnswerVariants(q.getAnswerVariants());
+                oldQuestion.setNumberOfCorrectAnswers(q.getNumberOfCorrectAnswers());
                 questionService.save(oldQuestion);
             }
         });
@@ -105,7 +110,7 @@ public class TestService {
     public FullTest getTest(Integer testId, User user, Boolean isAdmin) {
         Test test = testRepository.getTestById(testId);
         boolean userIsOwner = test.getAuthor().getId() == user.getId();
-        if (!(isAdmin || userIsOwner)){
+        if (!(isAdmin || userIsOwner)) {
             throw new ResourceAccessException("");
         }
 
@@ -118,8 +123,11 @@ public class TestService {
         return testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId);
     }
 
+    public Test getTestById(Integer id) { return testRepository.getTestById(id); }
 
-    public List<Test> getTop5TestsForStudent(int groupId) {
-        return testRepository.findTop5ByGroupIdOrderByIdDesc(groupId);
+    public StudentsContent getContentForStudent(User user) {
+        List<Mark> marks = markService.getAllByUser(user);
+        List<Test> tests = testRepository.getByGroupIdOrderByIdDesc(user.getGroup().getId());
+        return new StudentsContent(tests, marks);
     }
 }

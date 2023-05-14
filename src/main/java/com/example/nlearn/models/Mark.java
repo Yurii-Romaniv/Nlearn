@@ -24,8 +24,7 @@ public class Mark {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    private int mark;
-    private int scale;
+    private int value;
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)

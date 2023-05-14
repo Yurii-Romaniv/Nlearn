@@ -64,3 +64,5 @@ yarn-error.log*
 src/main/java/com/example/nlern
 
 .env
+.properties
+.properties

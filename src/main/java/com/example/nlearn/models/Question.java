@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.ManyToOne;
-
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
@@ -26,7 +26,9 @@ public class Question {
     private int id;
 
     private String questionText;
-    private boolean hasMultipleAnswers;
+
+    @Min(value = 1)
+    private int numberOfCorrectAnswers = 1;
 
     @ElementCollection()
     @Column(length = 1000)
