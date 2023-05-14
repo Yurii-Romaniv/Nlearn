@@ -31,6 +31,7 @@ public class StudentsHomeController {
 
     @GetMapping("/load-tests")
     public StudentsContent home(@AuthenticationPrincipal CustomOAuth2User user) {
+        testPassingService.checkIfAllTestsClosed(user.getDbUser());
         return testService.getContentForStudent(user.getDbUser());
     }
 

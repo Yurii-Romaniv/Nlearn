@@ -26,11 +26,12 @@ public class TestPassingService {
 
     private static final int INSURANCE_TIME = 2;
     private static final int SCALE_OF_MARKS = 100;
+
     @Autowired
     TestSessionInfoRepository testSessionInfoRepository;
 
     @Autowired
-    private TestService testRepository;
+    private TestService testService;
 
     @Autowired
     private QuestionService questionService;
@@ -50,7 +51,7 @@ public class TestPassingService {
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public FullTest startTest(Integer testId, User user) {
-        Test test = testRepository.getTestById(testId);
+        Test test = testService.getTestById(testId);
         TestSessionInfo sessionInfo = user.getTestSessionInfo();
         LocalDateTime currentTime = java.time.LocalDateTime.now();
         LocalDateTime endTime = test.getEndTime();
@@ -69,7 +70,7 @@ public class TestPassingService {
 
 
     public ResponseEntity endTest(Integer testId, User user, List<Question> answeredQuestions) {
-        Test test = testRepository.getTestById(testId);
+        Test test = testService.getTestById(testId);
         TestSessionInfo sessionInfo = user.getTestSessionInfo();
         LocalDateTime currentTime = java.time.LocalDateTime.now();
         LocalDateTime endTime = sessionInfo.getEndTime();
@@ -106,5 +107,22 @@ public class TestPassingService {
         testSessionInfoRepository.save(sessionInfo);
 
         return ResponseEntity.ok(questions);
+    }
+
+    public void checkIfAllTestsClosed(User user) {
+        TestSessionInfo sessionInfo = user.getTestSessionInfo();
+        LocalDateTime currentTime = java.time.LocalDateTime.now();
+        LocalDateTime endTime = sessionInfo.getEndTime();
+
+        if (sessionInfo.isActive() && currentTime.isAfter(endTime)) {
+            Mark mark = new Mark();
+            mark.setValue(0);
+            mark.setTest(testService.getTestById(sessionInfo.getCurrentTestId()));
+            mark.setUser(user);
+            markService.save(mark);
+
+            sessionInfo.setActive(false);
+            testSessionInfoRepository.save(sessionInfo);
+        }
     }
 }
