@@ -10,7 +10,8 @@ function Home() {
         <div>
             <AppNavbar/>
             <Container fluid>
-                <Button color="link"><Link to="/home">tests</Link></Button>
+                <Button color="link"><Link to="students-home">student's personal page</Link></Button>
+                <Button color="link"><Link to="teachers-home">teacher's personal page</Link></Button>
             </Container>
         </div>
     );

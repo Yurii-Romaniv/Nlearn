@@ -60,10 +60,17 @@ public class TestPassingService {
 
         List<Question> questions = questionService.findByTestIdWithoutAnswers(testId);
 
-        int duration = (int) Math.min(test.getDuration(), ChronoUnit.MINUTES.between(currentTime, endTime));
-        test.setDuration(duration);
-        sessionInfo.startSession(test.getId(), currentTime.plusMinutes(duration + INSURANCE_TIME));
-        testSessionInfoRepository.save(sessionInfo);
+
+        if (sessionInfo.isActive()) {
+            test.setEndTime(sessionInfo.getEndTime().minusMinutes(INSURANCE_TIME));
+        } else {
+            int duration = (int) Math.min(test.getDuration(), ChronoUnit.MINUTES.between(currentTime, endTime));
+            LocalDateTime sessionEndTime = currentTime.plusMinutes(duration);
+            test.setEndTime(sessionEndTime);
+            sessionInfo.startSession(test.getId(), sessionEndTime.plusMinutes(INSURANCE_TIME));
+            testSessionInfoRepository.save(sessionInfo);
+        }
+
 
         return new FullTest(test, questions, null, null, null);
     }

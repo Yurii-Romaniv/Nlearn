@@ -23,7 +23,8 @@ const emptyItem = {
         questionText: "",
         id: 1,
         answerVariants: [""],
-        correctIndexes: []
+        correctIndexes: [],
+        numberOfCorrectAnswers:0
 
     }],
 
@@ -35,14 +36,14 @@ const emptyItem = {
 
 function TestEdit() {
     const [item, setItem] = useState(emptyItem);
-    let maxId = 1;
+    const [maxId, setMaxId] = useState(0);
     const {id} = useParams();
 
     const {error, isLoading} = useQuery('fullTests', () =>
             fetch(`/teachers-home/tests/${id}`, {mode: "no-cors"}).then(checkAuth),
         {
             onSuccess: (data) => {
-                maxId = Math.max(...data.questions.map(q => q.id));
+                setMaxId(Math.max(...data.questions.map(q => q.id))+1);
                 data.addedIds = new Set();
                 data.deletedIds = new Set();
                 data.groupName = data.test.group.name;
@@ -93,9 +94,11 @@ function TestEdit() {
         let question = newItem.questions.find(q => q.id === +id);
         if (!target.checked) {
             (question.correctIndexes) = (question.correctIndexes).filter(item => item !== +sId);
+            question.numberOfCorrectAnswers--;
         } else {
             if (!question.correctIndexes.includes(+sId)) {
                 (question.correctIndexes).push(+sId);
+                question.numberOfCorrectAnswers++;
             }
         }
         setItem(newItem);
@@ -136,6 +139,7 @@ function TestEdit() {
         question.answerVariants = (question.answerVariants).filter(i => i !== question.answerVariants[sIndex]);
         setItem(newItem);
         question.correctIndexes = (question.correctIndexes).filter(a => a !== +sIndex);
+        question.numberOfCorrectAnswers= question.correctIndexes.length;
         question.correctIndexes.forEach(function (a, index, thisArr) {
             if (a > +sIndex) {
                 thisArr[index]--;
@@ -153,10 +157,10 @@ function TestEdit() {
     }
 
 
-    async function addQuestion() {
+    function addQuestion() {
         let newItem = {...item};
-        const emptyQuestion = {questionText: "", id: +(++(maxId)), answerVariants: [""], correctIndexes: []};
-
+        setMaxId(maxId+1);
+        const emptyQuestion = {questionText: "", id: maxId, answerVariants: [""], correctIndexes: [], numberOfCorrectAnswers:0};
         newItem.questions.push(emptyQuestion);
         newItem.addedIds.add(emptyQuestion.id);
         setItem(newItem);
@@ -249,7 +253,7 @@ function TestEdit() {
 
                 <FormGroup className="my-4">
                     <Button color="primary" type="submit">Save</Button>{' '}
-                    <Button color="secondary" tag={Link} to="/home">Cancel</Button>
+                    <Button color="secondary" tag={Link} to="/teachers-home">Cancel</Button>
                 </FormGroup>
             </Form>
         </Container>
