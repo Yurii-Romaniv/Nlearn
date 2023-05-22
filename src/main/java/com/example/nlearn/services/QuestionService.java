@@ -35,5 +35,11 @@ public class QuestionService {
     public List<Question> findByTestId(Integer id) {
         return questionRepository.findByTestIdOrderById(id);
     }
+
+    public List<Question> findByTestIdWithoutAnswers(Integer id) {
+        List<Question> questions = questionRepository.getByTestIdOrderById(id);
+        questions.forEach(q -> q.setCorrectIndexes(null));
+        return questions;
+    }
 }
 
