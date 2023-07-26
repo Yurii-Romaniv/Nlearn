@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useParams, useHistory} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import {useQuery} from "react-query";
@@ -37,7 +37,9 @@ const emptyItem = {
 function TestEdit() {
     const [item, setItem] = useState(emptyItem);
     const [maxId, setMaxId] = useState(0);
+    const [isGroupValidateError, setIsGroupValidateError] = useState(false);
     const {id} = useParams();
+    const history = useHistory();
 
     const {error, isLoading} = useQuery('fullTests', () =>
             fetch(`/teachers-home/tests/${id}`, {mode: "no-cors"}).then(checkAuth),
@@ -73,6 +75,7 @@ function TestEdit() {
         let newItem = {...item};
         newItem.test.group = event.value;
         setItem(newItem);
+        if (isGroupValidateError) setIsGroupValidateError(false);
     }
 
 
@@ -121,14 +124,19 @@ function TestEdit() {
         item.addedIds = Array.from(item.addedIds);
         item.deletedIds = Array.from(item.deletedIds);
 
-        await fetch('/teachers-home/tests/' + (item.test.id ?? 'new'), {
-            method: (item.test.id) ? 'PUT' : 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(item),
-        });
+        if (item.test.group.name) {
+            await fetch('/teachers-home/tests/' + (item.test.id ?? 'new'), {
+                method: (item.test.id) ? 'PUT' : 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(item),
+            });
+            history.goBack();
+        } else {
+            setIsGroupValidateError(true);
+        }
     }
 
 
@@ -197,11 +205,11 @@ function TestEdit() {
             <Form onSubmit={handleSubmit} className="container-fluid">
                 <FormGroup>
                     <Label for="name">Name</Label>
-                    <Input type="text" name="name" id="name" value={item.test.name || ''}
+                    <Input required type="text" name="name" id="name" value={item.test.name || ''}
                            onChange={handleChange} autoComplete="name"/>
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup style={isGroupValidateError? {border: '2px solid red'}: {}}>
                     <Label for="group">For group</Label>
                     <Dropdown name="group" id="group" options={options} onChange={handleGroupChange}
                               value={item.test.group.name} placeholder="Select group"/>
@@ -210,7 +218,7 @@ function TestEdit() {
 
                 <FormGroup>
                     <Label for="duration">passing time(minutes)</Label>
-                    <Input type="number" name="duration" id="duration" value={item.test.duration || ''}
+                    <Input required type="number" name="duration" id="duration" value={item.test.duration || ''}
                            onChange={handleChange} autoComplete="duration"/>
                 </FormGroup>
 
@@ -219,7 +227,7 @@ function TestEdit() {
                     item.questions.map((form, index) =>
                         <FormGroup key={form.id} className="my-4" style={{backgroundColor: "lightblue"}}>
 
-                            <Input className="col-9 bold" placeholder="name of question" type="text" name={index + ";"}
+                            <Input required className="col-9 bold" placeholder="name of question" type="text" name={index + ";"}
                                    value={form.questionText || ''}
                                    onChange={(e) => handleQuestionsChange(index, null, e)}
                                    style={{fontWeight: "bold"}}/>
@@ -231,7 +239,7 @@ function TestEdit() {
                                         <Input className="col-1" type="checkbox" name={form.id + ";" + sIndex}
                                                checked={isChecked(form.id, sIndex)} value={isChecked(form.id, sIndex)}
                                                onChange={(e) => handleCheckboxChange(form.id, sIndex, e)}/>
-                                        <Input className="col-9" type="text" name={index + ";" + sIndex}
+                                        <Input required className="col-9" type="text" name={index + ";" + sIndex}
                                                value={answer || ''}
                                                onChange={(e) => handleQuestionsChange(index, sIndex, e)}/>
                                         <Button className="col-1" size="sm" color="danger"
