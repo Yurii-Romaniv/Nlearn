@@ -69,7 +69,7 @@ function TestPassing() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(item.questions),
-        }).then(history.push("/students-home"));
+        }).then(history.push("/"));
     }
 
     function isChecked(id, sIndex) {

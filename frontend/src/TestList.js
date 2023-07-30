@@ -58,7 +58,7 @@ export default function TestList() {
                                 <td>
                                     <ButtonGroup>
                                         <Button size="sm" color="primary" tag={Link}
-                                                to={"/teachers-home/tests/" + test.id}>Edit</Button>
+                                                to={"/tests/" + test.id}>Edit</Button>
                                         <Button size="sm" color="danger" onClick={() => remove(test.id)}>Delete</Button>
                                     </ButtonGroup>
                                 </td>
@@ -68,7 +68,7 @@ export default function TestList() {
                     </tbody>
                 </Table>
                 <div className="float-right">
-                    <Button color="success" tag={Link} to="/teachers-home/tests/new">Add test</Button>
+                    <Button color="success" tag={Link} to="/tests/new">Add test</Button>
                 </div>
             </Container>
         </div>

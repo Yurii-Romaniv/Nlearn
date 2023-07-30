@@ -16,7 +16,8 @@ const emptyItem = {
         },
         author: null,
         duration: '',
-        id: null
+        id: null,
+        numberOfRetries: 1,
     },
 
     questions: [{
@@ -24,7 +25,7 @@ const emptyItem = {
         id: 1,
         answerVariants: [""],
         correctIndexes: [],
-        numberOfCorrectAnswers:0
+        numberOfCorrectAnswers: 0
 
     }],
 
@@ -219,7 +220,13 @@ function TestEdit() {
                 <FormGroup>
                     <Label for="duration">passing time(minutes)</Label>
                     <Input required type="number" name="duration" id="duration" value={item.test.duration || ''}
-                           onChange={handleChange} autoComplete="duration"/>
+                           onChange={handleChange}/>
+                </FormGroup>
+
+                <FormGroup>
+                    <Label for="numberOfRetries">number of retries</Label>
+                    <Input required type="number" name="numberOfRetries" id="numberOfRetries" value={item.test.numberOfRetries || ''}
+                           onChange={handleChange}/>
                 </FormGroup>
 
                 <hr></hr>
@@ -261,7 +268,7 @@ function TestEdit() {
 
                 <FormGroup className="my-4">
                     <Button color="primary" type="submit">Save</Button>{' '}
-                    <Button color="secondary" tag={Link} to="/teachers-home">Cancel</Button>
+                    <Button color="secondary" tag={Link} to="/">Cancel</Button>
                 </FormGroup>
             </Form>
         </Container>

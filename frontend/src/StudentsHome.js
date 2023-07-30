@@ -76,7 +76,7 @@ export default function StudentsHome() {
                                 <td>
                                     {testIsAvailable(test) &&
                                         <Button size="sm" color="primary" tag={Link}
-                                                to={`/students-home/${test.id}/start`}>start test</Button>
+                                                to={`/${test.id}/start`}>start test</Button>
                                     }
                                 </td>
                             </tr>
