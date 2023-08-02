@@ -18,6 +18,7 @@ const emptyItem = {
         duration: '',
         id: null,
         numberOfRetries: 1,
+        endTime: null
     },
 
     questions: [{
@@ -226,6 +227,12 @@ function TestEdit() {
                 <FormGroup>
                     <Label for="numberOfRetries">number of retries</Label>
                     <Input required type="number" name="numberOfRetries" id="numberOfRetries" value={item.test.numberOfRetries || ''}
+                           onChange={handleChange}/>
+                </FormGroup>
+
+                <FormGroup>
+                    <Label for="endTime">end time</Label>
+                    <Input required type="datetime-local" name="endTime" id="endTime" value={item.test.endTime || ''}
                            onChange={handleChange}/>
                 </FormGroup>
 

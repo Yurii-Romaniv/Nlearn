@@ -85,6 +85,7 @@ public class TestService {
         test.setDuration(receivedTest.getDuration());
         test.setGroup(receivedTest.getGroup());
         test.setNumberOfRetries(receivedTest.getNumberOfRetries());
+        test.setEndTime(receivedTest.getEndTime());
         test = testRepository.save(test);
         finalTest = test;
 
