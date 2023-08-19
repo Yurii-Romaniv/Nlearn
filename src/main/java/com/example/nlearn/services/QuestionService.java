@@ -2,7 +2,6 @@ package com.example.nlearn.services;
 
 import com.example.nlearn.models.Question;
 import com.example.nlearn.repos.QuestionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -11,10 +10,11 @@ import java.util.List;
 @Service
 @CrossOrigin
 public class QuestionService {
+    private final QuestionRepository questionRepository;
 
-    @Autowired
-    private QuestionRepository questionRepository;
-
+    public QuestionService(QuestionRepository questionRepository) {
+        this.questionRepository = questionRepository;
+    }
 
     public void deleteAllByTestId(Integer id) {
         questionRepository.deleteAllByTestId(id);
@@ -34,12 +34,6 @@ public class QuestionService {
 
     public List<Question> findByTestId(Integer id) {
         return questionRepository.findByTestIdOrderById(id);
-    }
-
-    public List<Question> findByTestIdWithoutAnswers(Integer id) {
-        List<Question> questions = questionRepository.getByTestIdOrderById(id);
-        questions.forEach(q -> q.setCorrectIndexes(null));
-        return questions;
     }
 }
 

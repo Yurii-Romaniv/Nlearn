@@ -1,11 +1,11 @@
 package com.example.nlearn.controllers;
 
-import com.example.nlearn.models.FullTest;
+import com.example.nlearn.dtos.TestDto;
+import com.example.nlearn.records.FullTest;
 
-import com.example.nlearn.models.Test;
 import com.example.nlearn.models.CustomOAuth2User;
+import com.example.nlearn.records.TestResults;
 import com.example.nlearn.services.TestService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,12 +23,14 @@ import java.util.List;
 @RestController
 @RequestMapping("teachers-home/tests")
 public class TestController {
+    private final TestService testService;
 
-    @Autowired
-    private TestService testService;
+    public TestController(TestService testService) {
+        this.testService = testService;
+    }
 
     @GetMapping("/load-tests")
-    public List<Test> home(@AuthenticationPrincipal CustomOAuth2User user) {
+    public List<TestDto> home(@AuthenticationPrincipal CustomOAuth2User user) {
         return testService.getTop5Tests(user.getDbUser().getId());
     }
 

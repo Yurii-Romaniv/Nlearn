@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.AccessType;
 
 @Entity
 @Table(name = "users")
@@ -21,6 +22,7 @@ import lombok.Setter;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @AccessType(AccessType.Type.PROPERTY)
     private int id;
 
     private String name;

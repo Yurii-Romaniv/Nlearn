@@ -17,9 +17,7 @@ const EmptyContent = {
     marks: [{
         value: null,
         id: null,
-        test: {
-            id: null
-        }
+        testId: null
     }]
 
 };
@@ -36,7 +34,7 @@ export default function StudentsHome() {
     if (isLoading) return <div>Loading...</div>;
 
     function testIsAvailable(test) {
-        return test.numberOfRetries > content.marks.filter(m => m.test.id === test.id).length;
+        return test.numberOfRetries > content.marks.filter(m => m.testId === test.id).length;
     }
 
     return (
@@ -67,7 +65,7 @@ export default function StudentsHome() {
 
                                 <td>
                                     {content.marks.map(mark =>
-                                        mark.test.id === test.id &&
+                                        mark.testId === test.id &&
                                         <text key={mark.id}>{mark.value}, </text>
                                     )
                                     }

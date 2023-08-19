@@ -2,17 +2,19 @@ package com.example.nlearn.services;
 
 import com.example.nlearn.models.User;
 import com.example.nlearn.repos.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
+
+import java.util.List;
 
 @Service
 @CrossOrigin
 public class UserService {
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public User getById(Integer id) {
         return userRepository.getById(id);

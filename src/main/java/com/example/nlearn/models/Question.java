@@ -1,6 +1,8 @@
 package com.example.nlearn.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -30,15 +33,16 @@ public class Question {
     @Min(value = 1)
     private int numberOfCorrectAnswers = 1;
 
-    @ElementCollection()
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(length = 1000)
     private List<String> answerVariants;
 
-    @ElementCollection()
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(length = 10)
     private List<Integer> correctIndexes;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Test test;
 }

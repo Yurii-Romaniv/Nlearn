@@ -1,14 +1,16 @@
 package com.example.nlearn.services;
 
 import com.example.nlearn.exception.TestNotAllowedException;
-import com.example.nlearn.models.FullTest;
+import com.example.nlearn.dtos.QuestionForStudentDto;
+import com.example.nlearn.dtos.TestDto;
 import com.example.nlearn.models.Mark;
 import com.example.nlearn.models.Question;
 import com.example.nlearn.models.Test;
 import com.example.nlearn.models.TestSessionInfo;
 import com.example.nlearn.models.User;
+import com.example.nlearn.records.FullTestForPassing;
 import com.example.nlearn.repos.TestSessionInfoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.util.StreamUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,18 +29,19 @@ public class TestPassingService {
     private static final int INSURANCE_TIME = 2;
     private static final int SCALE_OF_MARKS = 100;
 
-    @Autowired
     TestSessionInfoRepository testSessionInfoRepository;
+    private final TestService testService;
+    private final QuestionService questionService;
+    private final MarkService markService;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private TestService testService;
-
-    @Autowired
-    private QuestionService questionService;
-
-    @Autowired
-    private MarkService markService;
-
+    public TestPassingService(TestSessionInfoRepository testSessionInfoRepository, TestService testService, QuestionService questionService, MarkService markService, ModelMapper modelMapper) {
+        this.testSessionInfoRepository = testSessionInfoRepository;
+        this.testService = testService;
+        this.questionService = questionService;
+        this.markService = markService;
+        this.modelMapper = modelMapper;
+    }
 
     public void raiseErrorIfTestingNotAllowed(Test test, int testId, User user, TestSessionInfo sessionInfo, LocalDateTime currentTime, LocalDateTime endTime) {
         boolean isTestForThisStudent = test.getGroup().getId() == user.getGroup().getId();
@@ -49,8 +52,7 @@ public class TestPassingService {
     }
 
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public FullTest startTest(Integer testId, User user) {
+    public FullTestForPassing startTest(Integer testId, User user) {
         Test test = testService.getTestById(testId);
         TestSessionInfo sessionInfo = user.getTestSessionInfo();
         LocalDateTime currentTime = LocalDateTime.now();
@@ -58,7 +60,7 @@ public class TestPassingService {
 
         raiseErrorIfTestingNotAllowed(test, testId, user, sessionInfo, currentTime, endTime);
 
-        List<Question> questions = questionService.findByTestIdWithoutAnswers(testId);
+        List<Question> questions = questionService.findByTestId(testId);
 
 
         if (sessionInfo.isActive()) {
@@ -71,8 +73,7 @@ public class TestPassingService {
             testSessionInfoRepository.save(sessionInfo);
         }
 
-
-        return new FullTest(test, questions, null, null, null);
+        return new FullTestForPassing(modelMapper.map(test, TestDto.class), questions.stream().map( question -> modelMapper.map(question, QuestionForStudentDto.class)).toList());
     }
 
 

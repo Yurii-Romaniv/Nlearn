@@ -1,12 +1,11 @@
 package com.example.nlearn.controllers;
 
 import com.example.nlearn.models.CustomOAuth2User;
-import com.example.nlearn.models.FullTest;
 import com.example.nlearn.models.Question;
-import com.example.nlearn.models.StudentsContent;
+import com.example.nlearn.records.StudentsContent;
+import com.example.nlearn.records.FullTestForPassing;
 import com.example.nlearn.services.TestPassingService;
 import com.example.nlearn.services.TestService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,13 +20,13 @@ import java.util.List;
 @RestController
 @RequestMapping("students-home")
 public class StudentsHomeController {
+    private final TestService testService;
+    private final TestPassingService testPassingService;
 
-    @Autowired
-    private TestService testService;
-
-    @Autowired
-    private TestPassingService testPassingService;
-
+    public StudentsHomeController(TestService testService, TestPassingService testPassingService) {
+        this.testService = testService;
+        this.testPassingService = testPassingService;
+    }
 
     @GetMapping("/load-tests")
     public StudentsContent home(@AuthenticationPrincipal CustomOAuth2User user) {
@@ -36,7 +35,7 @@ public class StudentsHomeController {
     }
 
     @GetMapping("/{id}/start")
-    public FullTest testing(@PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
+    public FullTestForPassing testing(@PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
         return testPassingService.startTest(id, user.getDbUser());
     }
 

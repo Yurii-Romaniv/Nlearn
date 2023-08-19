@@ -1,14 +1,17 @@
 package com.example.nlearn.services;
 
-import com.example.nlearn.models.FullTest;
+import com.example.nlearn.dtos.MarkDto;
+import com.example.nlearn.dtos.TestDto;
+import com.example.nlearn.records.FullTest;
 import com.example.nlearn.models.Group;
 import com.example.nlearn.models.Mark;
 import com.example.nlearn.models.Question;
-import com.example.nlearn.models.StudentsContent;
+import com.example.nlearn.records.StudentsContent;
 import com.example.nlearn.models.Test;
 import com.example.nlearn.models.User;
 import com.example.nlearn.repos.TestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,25 +22,25 @@ import java.util.List;
 @Service
 @CrossOrigin
 public class TestService {
+    private final TestRepository testRepository;
+    private final QuestionService questionService;
+    private final GroupService groupService;
+    private final UserService userService;
+    private final MarkService markService;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private TestRepository testRepository;
-
-    @Autowired
-    private QuestionService questionService;
-
-    @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private MarkService markService;
+    public TestService(TestRepository testRepository, QuestionService questionService, GroupService groupService, UserService userService, MarkService markService, ModelMapper modelMapper) {
+        this.testRepository = testRepository;
+        this.questionService = questionService;
+        this.groupService = groupService;
+        this.userService = userService;
+        this.markService = markService;
+        this.modelMapper = modelMapper;
+    }
 
     public ResponseEntity deleteTest(Integer testId, Integer userId, Boolean isAdmin) {
 
-        boolean userIsOwner = testRepository.getById(testId).getAuthor().getId() == userId;
+        boolean userIsOwner = testRepository.getTestById(testId).getAuthor().getId() == userId;
         if (!(isAdmin || userIsOwner)) {
             return ResponseEntity.notFound().build();
         }
@@ -51,7 +54,7 @@ public class TestService {
 
     public ResponseEntity createTest(FullTest fullTest, User creator) {
 
-        Test test = fullTest.test();
+        Test test = modelMapper.map(fullTest.test(), Test.class);
         List<Question> questions = fullTest.questions();
 
         test.setAuthor(userService.getById(creator.getId()));
@@ -66,7 +69,7 @@ public class TestService {
         return ResponseEntity.ok().build();
     }
 
-
+    @Transactional
     public ResponseEntity updateTest(Integer testId, FullTest fullTest, Integer userId, Boolean isAdmin) {
         Test test = testRepository.getTestById(testId);
         boolean userIsOwner = test.getAuthor().getId() == userId;
@@ -75,7 +78,7 @@ public class TestService {
         }
 
         Test finalTest;
-        Test receivedTest = fullTest.test();
+        TestDto receivedTest = fullTest.test();
         List<Question> receivedQuestions = fullTest.questions();
 
         List<Integer> createdQuestions = fullTest.addedIds();
@@ -105,7 +108,7 @@ public class TestService {
             }
         });
 
-        return ResponseEntity.ok(test);
+        return ResponseEntity.ok(modelMapper.map(test, TestDto.class));
     }
 
 
@@ -118,11 +121,11 @@ public class TestService {
 
         List<Question> questions = questionService.findByTestId(testId);
         List<Group> groups = groupService.getGroups();
-        return new FullTest(test, questions, groups, null, null);
+        return new FullTest(modelMapper.map(test, TestDto.class), questions, groups, null, null);
     }
 
-    public List<Test> getTop5Tests(int teacherId) {
-        return testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId);
+    public List<TestDto> getTop5Tests(int teacherId) {
+        return mapList(testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId), TestDto.class);
     }
 
     public Test getTestById(Integer id) { return testRepository.getTestById(id); }
@@ -130,6 +133,10 @@ public class TestService {
     public StudentsContent getContentForStudent(User user) {
         List<Mark> marks = markService.getAllByUser(user);
         List<Test> tests = testRepository.getByGroupIdOrderByIdDesc(user.getGroup().getId());
-        return new StudentsContent(tests, marks);
+        return new StudentsContent(mapList(tests, TestDto.class), mapList(marks, MarkDto.class) );
+    }
+
+    <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
+        return source.stream().map(element -> modelMapper.map(element, targetClass)).toList();
     }
 }
