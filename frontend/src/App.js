@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import {useQuery} from "react-query";
 import {checkAuth} from "./checkAuth";
 import {useState} from "react";
+import TestResults from "./TestResults";
 
 function App() {
     const [user, setUser] = useState({role: null});
@@ -24,6 +25,7 @@ function App() {
         <BrowserRouter>
             <Switch>
                 <Route path='/' exact={true} component={user.role=="STUDENT"? StudentsHome : TestList}/>
+                <Route path='/tests/:id/results' component={TestResults}/>
                 <Route path='/tests/:id' component={TestEdit}/>
                 <Route path='/:id/start' component={TestPassing}/>
             </Switch>

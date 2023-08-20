@@ -38,6 +38,9 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    public List<User> findAllByGroupId(int id) {
+        return userRepository.findByGroupIdOrderByName(id);
+    }
 
 }
 

@@ -54,5 +54,10 @@ public class TestController {
     public FullTest getTest(@PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
         return testService.getTest(id, user.getDbUser(), user.isAdmin());
     }
+
+    @GetMapping("/{id}/results")
+    public TestResults getTestResults(@PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
+        return testService.getTestResults(id, user.getDbUser(), user.isAdmin());
+    }
 }
 

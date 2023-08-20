@@ -25,4 +25,12 @@ public class MarkService {
     public void save(Mark mark) { markRepository.save(mark); }
 
     int countMarksByUserAndTest(User user, Test test) { return markRepository.countMarksByUserAndTest(user, test); }
+
+    public List<Mark> findByTestId(int testId) {
+        return markRepository.getByTestId(testId);
+    }
+
+    public void deleteAllByTestId(int testId){
+        markRepository.deleteAllByTestId(testId);
+    }
 }

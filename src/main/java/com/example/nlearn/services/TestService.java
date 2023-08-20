@@ -9,6 +9,7 @@ import com.example.nlearn.models.Question;
 import com.example.nlearn.records.StudentsContent;
 import com.example.nlearn.models.Test;
 import com.example.nlearn.models.User;
+import com.example.nlearn.records.TestResults;
 import com.example.nlearn.repos.TestRepository;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -38,6 +39,7 @@ public class TestService {
         this.modelMapper = modelMapper;
     }
 
+    @Transactional
     public ResponseEntity deleteTest(Integer testId, Integer userId, Boolean isAdmin) {
 
         boolean userIsOwner = testRepository.getTestById(testId).getAuthor().getId() == userId;
@@ -46,6 +48,7 @@ public class TestService {
         }
 
         questionService.deleteAllByTestId(testId);
+        markService.deleteAllByTestId(testId);
         testRepository.deleteById(testId);
 
         return ResponseEntity.ok().build();
@@ -61,7 +64,7 @@ public class TestService {
         test = testRepository.save(test);
 
         Test finalTest = test;
-        questions.stream().forEach(q -> {
+        questions.forEach(q -> {
             q.setTest(finalTest);
             questionService.save(q);
         });
@@ -94,7 +97,7 @@ public class TestService {
 
         deletedQuestions.forEach(i -> questionService.deleteById(i));//TODO add if(exist)
 
-        receivedQuestions.stream().forEach(q -> {
+        receivedQuestions.forEach(q -> {
             if (createdQuestions.contains(q.getId())) {
                 q.setTest(finalTest);
                 questionService.save(q);
@@ -126,6 +129,17 @@ public class TestService {
 
     public List<TestDto> getTop5Tests(int teacherId) {
         return mapList(testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId), TestDto.class);
+    }
+
+    public TestResults getTestResults(Integer testId, User user, Boolean isAdmin) {
+        Test test = testRepository.getTestById(testId);
+        boolean userIsOwner = test.getAuthor().getId() == user.getId();
+        if (!(isAdmin || userIsOwner)) {
+            throw new ResourceAccessException("");
+        }
+
+        List<Mark> marks = markService.findByTestId(testId);
+        return new TestResults(userService.findAllByGroupId(test.getGroup().getId()), mapList(marks, MarkDto.class));
     }
 
     public Test getTestById(Integer id) { return testRepository.getTestById(id); }

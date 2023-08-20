@@ -13,4 +13,8 @@ public interface MarkRepository extends CrudRepository<Mark, Integer> {
     Integer countMarksByUserAndTest(User user, Test test);
 
     List<Mark> getAllByUser(User user);
+
+    List<Mark> getByTestId(int testId);
+
+    void deleteAllByTestId(int test_id);
 }

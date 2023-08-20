@@ -60,6 +60,8 @@ export default function TestList() {
                                         <Button size="sm" color="primary" tag={Link}
                                                 to={"/tests/" + test.id}>Edit</Button>
                                         <Button size="sm" color="danger" onClick={() => remove(test.id)}>Delete</Button>
+                                        <Button size="sm" color="primary" tag={Link}
+                                                to={"/tests/" + test.id + "/results"}>view results</Button>
                                     </ButtonGroup>
                                 </td>
                             </tr>
