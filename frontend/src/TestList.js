@@ -15,9 +15,10 @@ const EmptyTest = [{
 
 export default function TestList() {
     const [tests, setTests] = useState(EmptyTest);
+    const [loadAll, setLoadAll] = useState(false);
 
-    const {error, isLoading} = useQuery('tests', () =>
-            fetch('teachers-home/tests/load-tests', {mode: "no-cors"}).then(checkAuth),
+    const {error, isLoading} = useQuery(['tests', loadAll], () =>
+            fetch(`teachers-home/tests/load-${loadAll ? "all-" : ""}tests`, {mode: "no-cors"}).then(checkAuth),
         {onSuccess: setTests}
     );
 
@@ -71,6 +72,9 @@ export default function TestList() {
                 </Table>
                 <div className="float-right">
                     <Button color="success" tag={Link} to="/tests/new">Add test</Button>
+                    <Button color="primary" onClick={() => setLoadAll(loadAll => !loadAll)}>
+                        {loadAll ? "roll up" : "Load all tests"}
+                    </Button>
                 </div>
             </Container>
         </div>

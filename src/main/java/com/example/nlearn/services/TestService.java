@@ -131,6 +131,10 @@ public class TestService {
         return mapList(testRepository.findTop5ByAuthorIdOrderByIdDesc(teacherId), TestDto.class);
     }
 
+    public List<TestDto> getAllTests(int teacherId) {
+        return mapList(testRepository.findAllByAuthorIdOrderByIdDesc(teacherId), TestDto.class);
+    }
+
     public TestResults getTestResults(Integer testId, User user, Boolean isAdmin) {
         Test test = testRepository.getTestById(testId);
         boolean userIsOwner = test.getAuthor().getId() == user.getId();

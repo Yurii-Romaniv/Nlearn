@@ -30,13 +30,18 @@ public class TestController {
     }
 
     @GetMapping("/load-tests")
-    public List<TestDto> home(@AuthenticationPrincipal CustomOAuth2User user) {
+    public List<TestDto> getTests(@AuthenticationPrincipal CustomOAuth2User user) {
         return testService.getTop5Tests(user.getDbUser().getId());
+    }
+
+    @GetMapping("/load-all-tests")
+    public List<TestDto> getAllTests(@AuthenticationPrincipal CustomOAuth2User user) {
+        return testService.getAllTests(user.getDbUser().getId());
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteClient(@PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
+    public ResponseEntity deleteTest(@PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
         return testService.deleteTest(id, user.getDbUser().getId(), user.isAdmin());
     }
 
