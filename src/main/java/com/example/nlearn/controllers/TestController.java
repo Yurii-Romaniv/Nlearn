@@ -29,12 +29,12 @@ public class TestController {
         this.testService = testService;
     }
 
-    @GetMapping("/load-tests")
+    @GetMapping("/load")
     public List<TestDto> getTests(@AuthenticationPrincipal CustomOAuth2User user) {
         return testService.getTop5Tests(user.getDbUser().getId());
     }
 
-    @GetMapping("/load-all-tests")
+    @GetMapping("/load-all")
     public List<TestDto> getAllTests(@AuthenticationPrincipal CustomOAuth2User user) {
         return testService.getAllTests(user.getDbUser().getId());
     }

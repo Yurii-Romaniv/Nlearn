@@ -15,6 +15,8 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     boolean existsByEmail(String email);
 
     List<User> findByGroupIdOrderByName(int id);
+
+    List<User> findAllByOrderByIdDesc();
 }
 
 

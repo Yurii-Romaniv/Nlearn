@@ -12,8 +12,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .requestMatchers("/admins-home/**").hasAuthority("ADMIN")
                 .requestMatchers("/teachers-home/**").hasAnyAuthority("TEACHER", "ADMIN")
-                .requestMatchers("/students-home/**").hasAnyAuthority("STUDENT")
+                .requestMatchers("/students-home/**").hasAuthority("STUDENT")
                 .anyRequest().authenticated()
                 .and()
                 .logout()

@@ -60,7 +60,7 @@ public class TestService {
         Test test = modelMapper.map(fullTest.test(), Test.class);
         List<Question> questions = fullTest.questions();
 
-        test.setAuthor(userService.getById(creator.getId()));
+        test.setAuthor(userService.getUser(creator.getId()));
         test = testRepository.save(test);
 
         Test finalTest = test;
@@ -74,7 +74,7 @@ public class TestService {
 
     @Transactional
     public ResponseEntity updateTest(Integer testId, FullTest fullTest, Integer userId, Boolean isAdmin) {
-        Test test = testRepository.getTestById(testId);
+        Test test = testRepository.getById(testId);
         boolean userIsOwner = test.getAuthor().getId() == userId;
         if (!(isAdmin || userIsOwner)) {
             return ResponseEntity.notFound().build();
@@ -116,7 +116,7 @@ public class TestService {
 
 
     public FullTest getTest(Integer testId, User user, Boolean isAdmin) {
-        Test test = testRepository.getTestById(testId);
+        Test test = testRepository.getById(testId);
         boolean userIsOwner = test.getAuthor().getId() == user.getId();
         if (!(isAdmin || userIsOwner)) {
             throw new ResourceAccessException("");
@@ -136,7 +136,7 @@ public class TestService {
     }
 
     public TestResults getTestResults(Integer testId, User user, Boolean isAdmin) {
-        Test test = testRepository.getTestById(testId);
+        Test test = testRepository.getById(testId);
         boolean userIsOwner = test.getAuthor().getId() == user.getId();
         if (!(isAdmin || userIsOwner)) {
             throw new ResourceAccessException("");
@@ -146,7 +146,7 @@ public class TestService {
         return new TestResults(userService.findAllByGroupId(test.getGroup().getId()), mapList(marks, MarkDto.class));
     }
 
-    public Test getTestById(Integer id) { return testRepository.getTestById(id); }
+    public Test getTestById(Integer id) { return testRepository.getById(id); }
 
     public StudentsContent getContentForStudent(User user) {
         List<Mark> marks = markService.getAllByUser(user);

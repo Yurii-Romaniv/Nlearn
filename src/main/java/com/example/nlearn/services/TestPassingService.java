@@ -10,6 +10,7 @@ import com.example.nlearn.models.TestSessionInfo;
 import com.example.nlearn.models.User;
 import com.example.nlearn.records.FullTestForPassing;
 import com.example.nlearn.repos.TestSessionInfoRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.util.StreamUtils;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,7 @@ public class TestPassingService {
         }
     }
 
-
+    @Transactional
     public FullTestForPassing startTest(Integer testId, User user) {
         Test test = testService.getTestById(testId);
         TestSessionInfo sessionInfo = user.getTestSessionInfo();

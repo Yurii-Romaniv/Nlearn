@@ -14,4 +14,5 @@ public interface TestRepository extends CrudRepository<Test, Integer> {
 
     Test getTestById(int id);
 
+    List<Test> findAllByAuthorIdOrderByIdDesc(int authorId);
 }
