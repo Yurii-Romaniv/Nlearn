@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
-import {Link, useParams, useHistory} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
-import AppNavbar from './AppNavbar';
 import {useQuery} from "react-query";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
@@ -41,7 +40,7 @@ function TestEdit() {
     const [maxId, setMaxId] = useState(0);
     const [isGroupValidateError, setIsGroupValidateError] = useState(false);
     const {id} = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const {error, isLoading} = useQuery('fullTests', () =>
             fetch(`/teachers-home/tests/${id}`, {mode: "no-cors"}).then(checkAuth),
@@ -135,7 +134,7 @@ function TestEdit() {
                 },
                 body: JSON.stringify(item),
             });
-            history.goBack();
+            navigate("../");
         } else {
             setIsGroupValidateError(true);
         }
@@ -201,7 +200,6 @@ function TestEdit() {
 
 
     return <div>
-        <AppNavbar/>
         <Container>
             {<h2>{item.test.id ? 'Edit Test' : 'Add Test'}</h2>}
             <Form onSubmit={handleSubmit} className="container-fluid">

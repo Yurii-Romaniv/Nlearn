@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Button, Container, Table} from 'reactstrap';
-import AppNavbar from './AppNavbar';
 import {Link, useParams} from 'react-router-dom';
 import {useQuery} from "react-query";
 import {checkAuth} from "./checkAuth"
@@ -29,7 +28,6 @@ export default function TestResults() {
     if (isLoading) return <div>Loading...</div>;
 
     return (<div>
-        <AppNavbar/>
         <Container fluid>
             <h3>Test Results</h3>
             <Table className="mt-4">

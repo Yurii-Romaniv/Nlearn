@@ -2,6 +2,7 @@ package com.example.nlearn.services;
 
 import com.example.nlearn.dtos.MarkDto;
 import com.example.nlearn.dtos.TestDto;
+import com.example.nlearn.dtos.UserDto;
 import com.example.nlearn.records.FullTest;
 import com.example.nlearn.models.Group;
 import com.example.nlearn.models.Mark;
@@ -40,10 +41,13 @@ public class TestService {
     }
 
     @Transactional
-    public ResponseEntity deleteTest(Integer testId, Integer userId, Boolean isAdmin) {
+    private boolean userIsOwner(Test test, int userId){
+        return test.getAuthor().getId() == userId;
+    }
 
-        boolean userIsOwner = testRepository.getTestById(testId).getAuthor().getId() == userId;
-        if (!(isAdmin || userIsOwner)) {
+    public ResponseEntity deleteTest(Integer testId, Integer userId, Boolean isAdmin) {
+        Test test = testRepository.getTestById(testId);
+        if (!(isAdmin || userIsOwner(test, userId))) {
             return ResponseEntity.notFound().build();
         }
 
@@ -75,8 +79,7 @@ public class TestService {
     @Transactional
     public ResponseEntity updateTest(Integer testId, FullTest fullTest, Integer userId, Boolean isAdmin) {
         Test test = testRepository.getById(testId);
-        boolean userIsOwner = test.getAuthor().getId() == userId;
-        if (!(isAdmin || userIsOwner)) {
+        if (!(isAdmin || userIsOwner(test, userId))) {
             return ResponseEntity.notFound().build();
         }
 
@@ -114,11 +117,10 @@ public class TestService {
         return ResponseEntity.ok(modelMapper.map(test, TestDto.class));
     }
 
-
+    @Transactional
     public FullTest getTest(Integer testId, User user, Boolean isAdmin) {
         Test test = testRepository.getById(testId);
-        boolean userIsOwner = test.getAuthor().getId() == user.getId();
-        if (!(isAdmin || userIsOwner)) {
+        if (!(isAdmin || userIsOwner(test, user.getId()))) {
             throw new ResourceAccessException("");
         }
 
@@ -135,15 +137,16 @@ public class TestService {
         return mapList(testRepository.findAllByAuthorIdOrderByIdDesc(teacherId), TestDto.class);
     }
 
+    @Transactional
     public TestResults getTestResults(Integer testId, User user, Boolean isAdmin) {
         Test test = testRepository.getById(testId);
-        boolean userIsOwner = test.getAuthor().getId() == user.getId();
-        if (!(isAdmin || userIsOwner)) {
+        if (!(isAdmin || userIsOwner(test, user.getId()))) {
             throw new ResourceAccessException("");
         }
 
         List<Mark> marks = markService.findByTestId(testId);
-        return new TestResults(userService.findAllByGroupId(test.getGroup().getId()), mapList(marks, MarkDto.class));
+        List<User> users = userService.findAllByGroupId(test.getGroup().getId());
+        return new TestResults(mapList(users, UserDto.class), mapList(marks, MarkDto.class));
     }
 
     public Test getTestById(Integer id) { return testRepository.getById(id); }

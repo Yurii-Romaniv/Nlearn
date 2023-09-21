@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Button, Container, Table} from 'reactstrap';
-import AppNavbar from './AppNavbar';
 import {Link} from 'react-router-dom';
 import {useQuery} from "react-query";
 import {checkAuth} from "./checkAuth"
@@ -39,7 +38,6 @@ export default function StudentsHome() {
 
     return (
         <div>
-            <AppNavbar/>
             <Container fluid>
                 <h3>tests</h3>
                 <Table className="mt-4">

@@ -75,7 +75,7 @@ public class TestPassingService {
         return new FullTestForPassing(modelMapper.map(test, TestDto.class), questions.stream().map( question -> modelMapper.map(question, QuestionForStudentDto.class)).toList());
     }
 
-
+    @Transactional
     public ResponseEntity endTest(Integer testId, User user, List<Question> answeredQuestions) {
         Test test = testService.getTestById(testId);
         TestSessionInfo sessionInfo = user.getTestSessionInfo();

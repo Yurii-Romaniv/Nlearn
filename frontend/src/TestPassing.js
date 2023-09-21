@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
-import {useParams, useHistory} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input} from 'reactstrap';
-import AppNavbar from './AppNavbar';
 import {useQuery} from "react-query";
 import Countdown from 'react-countdown';
 import 'react-dropdown/style.css';
@@ -25,7 +24,7 @@ const emptyItem = {
 };
 
 function TestPassing() {
-    const history = useHistory();
+    let navigate = useNavigate();
     const [item, setItem] = useState(emptyItem);
     const {id} = useParams();
 
@@ -69,7 +68,7 @@ function TestPassing() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(item.questions),
-        }).then(history.push("/"));
+        }).then(navigate("/"));
     }
 
     function isChecked(id, sIndex) {
@@ -77,7 +76,6 @@ function TestPassing() {
     }
 
     return <div>
-        <AppNavbar/>
         <Container>
             {<h2>{item.test.name}</h2>}
             <Form onSubmit={handleSubmit} className="container-fluid">
