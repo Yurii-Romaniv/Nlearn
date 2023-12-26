@@ -1,22 +1,20 @@
 package com.example.nlearn.controllers;
 
+import com.example.nlearn.dtos.FullTestDto;
 import com.example.nlearn.dtos.TestDto;
-import com.example.nlearn.records.FullTest;
-
 import com.example.nlearn.models.CustomOAuth2User;
 import com.example.nlearn.records.TestResults;
 import com.example.nlearn.services.TestService;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -46,17 +44,17 @@ public class TestController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity createTest(@RequestBody FullTest fullTest, @AuthenticationPrincipal CustomOAuth2User user) {
+    public ResponseEntity createTest(@RequestBody FullTestDto fullTest, @AuthenticationPrincipal CustomOAuth2User user) {
         return testService.createTest(fullTest, user.getDbUser());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateTest(@PathVariable Integer id, @RequestBody FullTest fullTest, @AuthenticationPrincipal CustomOAuth2User user) {
-        return testService.updateTest(id, fullTest, user.getDbUser().getId(), user.isAdmin());
+    public ResponseEntity updateTest(@PathVariable Integer id, @RequestBody FullTestDto fullTest, @AuthenticationPrincipal CustomOAuth2User user) {
+        return testService.updateTest(fullTest, user.getDbUser().getId(), user.isAdmin());
     }
 
     @GetMapping("/{id}")
-    public FullTest getTest(@PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
+    public FullTestDto getTest(@PathVariable Integer id, @AuthenticationPrincipal CustomOAuth2User user) {
         return testService.getTest(id, user.getDbUser(), user.isAdmin());
     }
 
@@ -65,4 +63,3 @@ public class TestController {
         return testService.getTestResults(id, user.getDbUser(), user.isAdmin());
     }
 }
-

@@ -7,7 +7,6 @@ import {checkAuth} from "./checkAuth"
 const EmptyResults = {
     users: [{
         name: '', id: 0,
-
     }],
 
     marks: [{

@@ -1,9 +1,9 @@
 package com.example.nlearn.services;
 
 import com.example.nlearn.dtos.UserDto;
+import com.example.nlearn.models.Group;
 import com.example.nlearn.models.TestSessionInfo;
 import com.example.nlearn.models.User;
-import com.example.nlearn.repos.TestSessionInfoRepository;
 import com.example.nlearn.repos.UserRepository;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -18,12 +18,11 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final TestSessionInfoRepository testSessionInfoRepository;
 
-    public UserService(UserRepository userRepository, ModelMapper modelMapper, TestSessionInfoRepository testSessionInfoRepository) {
+
+    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
-        this.testSessionInfoRepository = testSessionInfoRepository;
     }
 
     public User getUser(Integer id) {
@@ -44,8 +43,8 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public List<User> findAllByGroupId(int id) {
-        return userRepository.findByGroupIdOrderByName(id);
+    public List<User> findAllByGroupId(Group group) {
+        return userRepository.findByGroups(group);
     }
 
     public List<User> getTop5Users() {
@@ -61,11 +60,15 @@ public class UserService {
         return ResponseEntity.ok().build();
     }
 
+    @Transactional
     public ResponseEntity createUser(UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
+        userRepository.save(user);
+        user.saveGroups();
+
         TestSessionInfo testSessionInfo = new TestSessionInfo();
-        testSessionInfoRepository.save(testSessionInfo);
         user.setTestSessionInfo(testSessionInfo);
+
         userRepository.save(user);
         return ResponseEntity.ok().build();
     }
@@ -75,6 +78,16 @@ public class UserService {
         User newUser = modelMapper.map(userDto, User.class);
         User oldUser = getUser(newUser.getId());
         newUser.setTestSessionInfo(oldUser.getTestSessionInfo());
+
+        newUser.removeGroups(
+                oldUser.getGroups().stream()
+                        .filter(g ->
+                                newUser.getGroups()
+                                        .stream()
+                                        .noneMatch(gr -> gr.getId() == g.getId()))
+                        .toList());
+
+        newUser.saveGroups();
         userRepository.save(newUser);
         return ResponseEntity.ok().build();
     }

@@ -22,15 +22,19 @@ public class MarkService {
         return markRepository.getAllByUser(user);
     }
 
-    public void save(Mark mark) { markRepository.save(mark); }
+    public void save(Mark mark) {
+        markRepository.save(mark);
+    }
 
-    int countMarksByUserAndTest(User user, Test test) { return markRepository.countMarksByUserAndTest(user, test); }
+    int countMarksByUserAndTest(User user, Test test) {
+        return markRepository.countMarksByUserAndTest(user, test);
+    }
 
     public List<Mark> findByTestId(int testId) {
         return markRepository.getByTestId(testId);
     }
 
-    public void deleteAllByTestId(int testId){
+    public void deleteAllByTestId(int testId) {
         markRepository.deleteAllByTestId(testId);
     }
 }

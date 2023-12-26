@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(TestNotAllowedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ExceptionRestResponse handleCustomException(Exception exception) {
+    public ExceptionRestResponse handleCustomException(TestNotAllowedException exception) {
         return new ExceptionRestResponse(500, exception.getMessage());
     }
 }

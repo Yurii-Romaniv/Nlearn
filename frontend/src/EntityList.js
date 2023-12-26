@@ -60,8 +60,11 @@ export default function EntityList(props) {
                                     <ButtonGroup>
                                         <Button size="sm" color="primary" tag={Link}
                                                 to={entityName + "s/" + entity.id}>Edit</Button>
-                                        <Button size="sm" color="danger" onClick={() => remove(entity.id)}>Delete</Button>
-                                        {entityName === "test" && <Button size="sm" color="primary" tag={Link} to={"/tests/" + entity.id + "/results"}>view results</Button>}
+                                        <Button size="sm" color="danger"
+                                                onClick={() => remove(entity.id)}>Delete</Button>
+                                        {entityName === "test" && <Button size="sm" color="primary" tag={Link}
+                                                                          to={"/tests/" + entity.id + "/results"}>view
+                                            results</Button>}
                                     </ButtonGroup>
                                 </td>
                             </tr>

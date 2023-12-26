@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {Link, useParams, useNavigate} from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import {useQuery} from "react-query";
 import Dropdown from 'react-dropdown';
+import Multiselect from 'multiselect-react-dropdown';
 import 'react-dropdown/style.css';
 import {checkAuth} from "./checkAuth";
 
@@ -11,19 +12,16 @@ const emptyUser = {
     name: '',
     email: '',
     role: '',
-    group: {
-        name: null
-    },
+    groups: [],
     id: null,
 };
 
 function UserEdit() {
     const [user, setUser] = useState(emptyUser);
-    const [groups, setGroups] = useState([]);
+    const [groups, setGroups] = useState([{id: 1, name: "dsf"}]);
     const [isSelectValidateError, setIsSelectValidateError] = useState(false);
     const {id} = useParams();
     const navigate = useNavigate();
-    let options = [];
     let userRoles = ["ADMIN", "TEACHER", "STUDENT"];
 
     const {error, isLoading} = useQuery('users', () =>
@@ -41,7 +39,7 @@ function UserEdit() {
         {
             onSuccess: (data) => {
                 setGroups(data);
-            }
+            },
         }
     );
 
@@ -55,6 +53,12 @@ function UserEdit() {
         setUser(newUser);
 
         if (isSelectValidateError) setIsSelectValidateError(false);
+    }
+
+    function onMultiselectChange(selectedList) {
+        let newUser = {...user};
+        newUser.groups = selectedList;
+        setUser(newUser);
     }
 
 
@@ -72,27 +76,17 @@ function UserEdit() {
     async function handleSubmit(event) {
         event.preventDefault();
 
-        if (user.group.name) {
-            await fetch('/admins-home/users/' + (user.id ? "" : 'new'), {
-                    method: (user.id) ? 'PUT' : 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(user),
-                }
-            );
-            navigate("../");
-        } else {
-            setIsSelectValidateError(true);
-        }
+        await fetch('/admins-home/users/' + (user.id ? "" : 'new'), {
+                method: (user.id) ? 'PUT' : 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user),
+            }
+        );
+        navigate("../");
     }
-
-
-    groups.forEach(function (g) {
-        options.push({value: g, label: g.name})
-    });
-
 
     return <div>
         <Container>
@@ -105,22 +99,23 @@ function UserEdit() {
                 </FormGroup>
 
                 <FormGroup>
-                    <Label for="name">Name</Label>
+                    <Label for="name">Email</Label>
                     <Input required type="text" name="email" id="name" value={user.email || ''}
                            onChange={handleChange} autoComplete="name"/>
                 </FormGroup>
 
+                <Multiselect
+                    options={groups}
+                    selectedValues={user.groups}
+                    onSelect={onMultiselectChange}
+                    onRemove={onMultiselectChange}
+                    displayValue="name"
+                />
+
 
                 <FormGroup style={isSelectValidateError ? {border: '2px solid red'} : {}}>
-                    <Label for="group">For group</Label>
-                    <Dropdown name="group" id="group" options={options} onChange={(e) => handleSelectChange(e, "group")}
-                              value={user.group.name} placeholder="Select group"/>
-                </FormGroup>
-
-
-                <FormGroup style={isSelectValidateError ? {border: '2px solid red'} : {}}>
-                    <Label for="group">For group</Label>
-                    <Dropdown name="group" id="group" options={userRoles}
+                    <Label for="role">Role</Label>
+                    <Dropdown name="role" id="role" options={userRoles}
                               onChange={(e) => handleSelectChange(e, "role")}
                               value={user.role} placeholder="Select role"/>
                 </FormGroup>

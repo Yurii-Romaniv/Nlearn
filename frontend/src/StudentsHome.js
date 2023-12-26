@@ -11,6 +11,7 @@ const EmptyContent = {
         group: null,
         author: null,
         duration: '',
+        endTime: null,
         id: null
     }],
     marks: [{
@@ -33,7 +34,8 @@ export default function StudentsHome() {
     if (isLoading) return <div>Loading...</div>;
 
     function testIsAvailable(test) {
-        return test.numberOfRetries > content.marks.filter(m => m.testId === test.id).length;
+        return test.numberOfRetries > content.marks.filter(m => m.testId === test.id).length
+            && Date.parse((test.endTime).replace('T', ' ').replace(/-/g, '/')) > Date.now();
     }
 
     return (
@@ -64,7 +66,7 @@ export default function StudentsHome() {
                                 <td>
                                     {content.marks.map(mark =>
                                         mark.testId === test.id &&
-                                        <text key={mark.id}>{mark.value}, </text>
+                                        <span key={mark.id}>{mark.value}, </span>
                                     )
                                     }
                                 </td>

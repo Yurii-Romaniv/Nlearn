@@ -1,5 +1,6 @@
 package com.example.nlearn.repos;
 
+import com.example.nlearn.models.Group;
 import com.example.nlearn.models.User;
 import org.springframework.data.repository.CrudRepository;
 
@@ -14,7 +15,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
     boolean existsByEmail(String email);
 
-    List<User> findByGroupIdOrderByName(int id);
+    List<User> findByGroups(Group group);
 
     List<User> findAllByOrderByIdDesc();
 }

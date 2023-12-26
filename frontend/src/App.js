@@ -15,7 +15,7 @@ import AppNavbar from "./AppNavbar";
 
 function App() {
     const [user, setUser] = useState({role: null});
-    let  home;
+    let home;
 
     useQuery('authUsers', () => fetch('/whoami', {mode: "no-cors"}).then(checkAuth), {
         onSuccess: (data) => setUser(data),

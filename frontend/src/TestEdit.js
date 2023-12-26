@@ -1,56 +1,26 @@
 import React, {useState} from 'react';
-import {Link, useParams, useNavigate} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import {useQuery} from "react-query";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import {checkAuth} from "./checkAuth";
-
-
-const emptyItem = {
-    test: {
-        name: '',
-        group: {
-            name: null
-        },
-        author: null,
-        duration: '',
-        id: null,
-        numberOfRetries: 1,
-        endTime: null
-    },
-
-    questions: [{
-        questionText: "",
-        id: 1,
-        answerVariants: [""],
-        correctIndexes: [],
-        numberOfCorrectAnswers: 0
-
-    }],
-
-    addedIds: new Set(),
-    deletedIds: new Set(),
-    groups: []
-
-};
+import {Test} from "./entities/Test"
+import {Question} from "./entities/Question"
+import {Answer} from "./entities/Answer"
 
 function TestEdit() {
-    const [item, setItem] = useState(emptyItem);
-    const [maxId, setMaxId] = useState(0);
+    const [test, setTest] = useState(new Test());
+    console.log(new Test());
+    const [groups, setGroups] = useState([{id: 1, name: ""}]);
     const [isGroupValidateError, setIsGroupValidateError] = useState(false);
     const {id} = useParams();
-    const navigate = useNavigate();
 
     const {error, isLoading} = useQuery('fullTests', () =>
             fetch(`/teachers-home/tests/${id}`, {mode: "no-cors"}).then(checkAuth),
         {
             onSuccess: (data) => {
-                setMaxId(Math.max(...data.questions.map(q => q.id))+1);
-                data.addedIds = new Set();
-                data.deletedIds = new Set();
-                data.groupName = data.test.group.name;
-                setItem(data);
+                setTest(data);
             },
             enabled: id !== 'new'
         }
@@ -60,11 +30,8 @@ function TestEdit() {
             fetch('/teachers-home/groups', {mode: "no-cors"}).then(checkAuth),
         {
             onSuccess: (data) => {
-                let newItem = emptyItem;
-                newItem.groups = data;
-                setItem(newItem);
+                setGroups(data);
             },
-            enabled: id === 'new'
         }
     );
 
@@ -73,9 +40,11 @@ function TestEdit() {
 
 
     function handleGroupChange(event) {
-        let newItem = {...item};
-        newItem.test.group = event.value;
-        setItem(newItem);
+        let newTest = {...test};
+        console.log(event.value)
+        console.log(newTest.group)
+        newTest.group = event.value;
+        setTest(newTest);
         if (isGroupValidateError) setIsGroupValidateError(false);
     }
 
@@ -84,57 +53,44 @@ function TestEdit() {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        let newItem = {...item};
+        let newTest = {...test};
 
-        newItem.test[name] = value;
-        setItem(newItem);
+        newTest[name] = value;
+        setTest(newTest);
     }
 
 
-    function handleCheckboxChange(id, sId, event) {
-        let newItem = {...item};
+    function handleCheckboxChange(index, sIndex, event) {
+        let newTest = {...test};
         const target = event.target;
-
-        let question = newItem.questions.find(q => q.id === +id);
-        if (!target.checked) {
-            (question.correctIndexes) = (question.correctIndexes).filter(item => item !== +sId);
-            question.numberOfCorrectAnswers--;
-        } else {
-            if (!question.correctIndexes.includes(+sId)) {
-                (question.correctIndexes).push(+sId);
-                question.numberOfCorrectAnswers++;
-            }
-        }
-        setItem(newItem);
+        newTest.questions[index].answerVariants[sIndex].isCorrect = target.checked;
+        setTest(newTest);
     }
 
     function handleQuestionsChange(id, sId = null, event) {
         const value = event.target.value;
-        let newItem = {...item};
+        let newTest = {...test};
 
         sId === null
-            ? newItem.questions[id].questionText = value
-            : (newItem.questions[id]).answerVariants[sId] = value;
+            ? newTest.questions[id].questionText = value
+            : (newTest.questions[id]).answerVariants[sId].answerText = value;
 
-        setItem(newItem);
+        setTest(newTest);
     }
 
 
     async function handleSubmit(event) {
         event.preventDefault();
-        item.addedIds = Array.from(item.addedIds);
-        item.deletedIds = Array.from(item.deletedIds);
 
-        if (item.test.group.name) {
-            await fetch('/teachers-home/tests/' + (item.test.id ?? 'new'), {
-                method: (item.test.id) ? 'PUT' : 'POST',
+        if (test.group.name) {
+            await fetch('/teachers-home/tests/' + (test.id ?? 'new'), {
+                method: (test.id) ? 'PUT' : 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(item),
+                body: JSON.stringify(test),
             });
-            navigate("../");
         } else {
             setIsGroupValidateError(true);
         }
@@ -142,117 +98,92 @@ function TestEdit() {
 
 
     async function delAnswer(index, sIndex) {
-        let newItem = {...item};
-        let question = newItem.questions[index];
-
-        question.answerVariants = (question.answerVariants).filter(i => i !== question.answerVariants[sIndex]);
-        setItem(newItem);
-        question.correctIndexes = (question.correctIndexes).filter(a => a !== +sIndex);
-        question.numberOfCorrectAnswers= question.correctIndexes.length;
-        question.correctIndexes.forEach(function (a, index, thisArr) {
-            if (a > +sIndex) {
-                thisArr[index]--;
-            }
-        });
-
+        let newTest = {...test};
+        let question = newTest.questions[index];
+        question.answerVariants.splice(sIndex, 1)
+        setTest(newTest);
     }
 
 
     async function addAnswer(index) {
-        let newItem = {...item};
-
-        (newItem.questions[index]).answerVariants.push([]);
-        setItem(newItem);
+        let newTest = {...test};
+        (newTest.questions[index]).answerVariants.push(new Answer());
+        setTest(newTest);
     }
-
 
     function addQuestion() {
-        let newItem = {...item};
-        setMaxId(maxId+1);
-        const emptyQuestion = {questionText: "", id: maxId, answerVariants: [""], correctIndexes: [], numberOfCorrectAnswers:0};
-        newItem.questions.push(emptyQuestion);
-        newItem.addedIds.add(emptyQuestion.id);
-        setItem(newItem);
+        let newTest = {...test};
+        newTest.questions.push(new Question());
+        setTest(newTest);
     }
-
-
-    function isChecked(id, sIndex) {
-        return (item.questions.find(q => q.id === +id)).correctIndexes.includes(sIndex);
-    }
-
 
     async function delQuestion(index) {
-        let newItem = {...item};
-        let questionId = newItem.questions[index].id;
-
-        newItem.addedIds.has(questionId)
-            ? newItem.addedIds.delete(questionId)
-            : newItem.deletedIds.add(questionId);
-
-        newItem.questions = newItem.questions.filter(i => i !== newItem.questions[index]);
-        setItem(newItem);
+        let newTest = {...test};
+        newTest.questions.splice(index, 1);
+        setTest(newTest);
     }
 
+
     let options = [];
-    item.groups.forEach(function (g) {
+    groups.forEach(function (g) {
         options.push({value: g, label: g.name})
     });
 
-
     return <div>
         <Container>
-            {<h2>{item.test.id ? 'Edit Test' : 'Add Test'}</h2>}
+            {<h2>{test.id ? 'Edit Test' : 'Add Test'}</h2>}
             <Form onSubmit={handleSubmit} className="container-fluid">
                 <FormGroup>
                     <Label for="name">Name</Label>
-                    <Input required type="text" name="name" id="name" value={item.test.name || ''}
+                    <Input required type="text" name="name" id="name" value={test.name || ''}
                            onChange={handleChange} autoComplete="name"/>
                 </FormGroup>
 
-                <FormGroup style={isGroupValidateError? {border: '2px solid red'}: {}}>
+                <FormGroup style={isGroupValidateError ? {border: '2px solid red'} : {}}>
                     <Label for="group">For group</Label>
                     <Dropdown name="group" id="group" options={options} onChange={handleGroupChange}
-                              value={item.test.group.name} placeholder="Select group"/>
-
+                              value={test.group.name} placeholder="Select group"/>
                 </FormGroup>
 
                 <FormGroup>
                     <Label for="duration">passing time(minutes)</Label>
-                    <Input required type="number" name="duration" id="duration" value={item.test.duration || ''}
+                    <Input required type="number" name="duration" id="duration" value={test.duration || ''}
                            onChange={handleChange}/>
                 </FormGroup>
 
                 <FormGroup>
                     <Label for="numberOfRetries">number of retries</Label>
-                    <Input required type="number" name="numberOfRetries" id="numberOfRetries" value={item.test.numberOfRetries || ''}
+                    <Input required type="number" name="numberOfRetries" id="numberOfRetries"
+                           value={test.numberOfRetries || ''}
                            onChange={handleChange}/>
                 </FormGroup>
 
                 <FormGroup>
                     <Label for="endTime">end time</Label>
-                    <Input required type="datetime-local" name="endTime" id="endTime" value={item.test.endTime || ''}
+                    <Input required type="datetime-local" name="endTime" id="endTime" value={test.endTime || ''}
                            onChange={handleChange}/>
                 </FormGroup>
 
                 <hr></hr>
                 {
-                    item.questions.map((form, index) =>
-                        <FormGroup key={form.id} className="my-4" style={{backgroundColor: "lightblue"}}>
+                    test.questions.map((question, index) =>
+                        <FormGroup key={index} className="my-4" style={{backgroundColor: "lightblue"}}>
 
-                            <Input required className="col-9 bold" placeholder="name of question" type="text" name={index + ";"}
-                                   value={form.questionText || ''}
+                            <Input required className="col-9 bold" placeholder="name of question" type="text"
+                                   name={index + ";"}
+                                   value={question.questionText || ''}
                                    onChange={(e) => handleQuestionsChange(index, null, e)}
                                    style={{fontWeight: "bold"}}/>
 
                             {
-                                form.answerVariants.map((answer, sIndex) =>
-                                    <div key={sIndex.id}
+                                question.answerVariants.map((answer, sIndex) =>
+                                    <div key={sIndex}
                                          className="d-flex justify-content-center container my-auto col-11">
-                                        <Input className="col-1" type="checkbox" name={form.id + ";" + sIndex}
-                                               checked={isChecked(form.id, sIndex)} value={isChecked(form.id, sIndex)}
-                                               onChange={(e) => handleCheckboxChange(form.id, sIndex, e)}/>
+                                        <Input className="col-1" type="checkbox" name={question.id + ";" + sIndex}
+                                               checked={answer.isCorrect} value={answer.isCorrect}
+                                               onChange={(e) => handleCheckboxChange(index, sIndex, e)}/>
                                         <Input required className="col-9" type="text" name={index + ";" + sIndex}
-                                               value={answer || ''}
+                                               value={answer.answerText || ''}
                                                onChange={(e) => handleQuestionsChange(index, sIndex, e)}/>
                                         <Button className="col-1" size="sm" color="danger"
                                                 onClick={() => delAnswer(index, sIndex)}>Delete</Button>

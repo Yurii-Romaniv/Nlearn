@@ -7,9 +7,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class QuestionForStudentDto {
+public class QuestionDto {
     private int id;
     private String questionText;
-    private int numberOfCorrectAnswers = 1;
-    private List<String> answerVariants;
+    private List<AnswerDto> answerVariants;
+    private boolean multivariate;
 }
