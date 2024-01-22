@@ -24,8 +24,6 @@ public class Question {
 
     private String questionText;
 
-    private int numberOfCorrectAnswers = 1;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "question_id")
     private List<AnswerVariant> answerVariants;

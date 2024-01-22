@@ -27,7 +27,7 @@ import java.util.List;
 @CrossOrigin
 public class TestPassingService {
 
-    private static final int INSURANCE_TIME = 2;
+    private static final int INSURANCE_TIME = 1;
     private static final int SCALE_OF_MARKS = 100;
     private final TestService testService;
     private final UserService userService;
@@ -127,6 +127,7 @@ public class TestPassingService {
         mark.setTest(test);
         mark.setUser(user);
         mark.setDetails(markDetails);
+        mark.setPassingDurationMinutes(test.getDuration() + INSURANCE_TIME- (int) ChronoUnit.MINUTES.between( currentTime, endTime));
         markService.save(mark);
 
         sessionInfo.setActive(false);
